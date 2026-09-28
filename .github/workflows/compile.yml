@@ -16,10 +16,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  # --------------------------------------------------------------------------
+  # JOB 1: Compile LaTeX & Stage Web Artifacts
+  # --------------------------------------------------------------------------
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
@@ -35,11 +35,13 @@ jobs:
 
       - name: Stage Deployment Directory
         run: |
-          mkdir -p public
-          # Copy compiled PDF from the Thesis directory
+          mkdir -p public/Shared/Images
+          # Copy compiled Thesis PDF
           cp Thesis/Thesis_Main_Structure.pdf public/Thesis_Main_Structure.pdf
-          # Copy website files and static assets
+          # Copy landing page
           cp index.html public/ 2>/dev/null || true
+          # Copy Shared/Images assets and root PNGs
+          cp -r Shared/Images/* public/Shared/Images/ 2>/dev/null || true
           cp *.png public/ 2>/dev/null || true
 
       - name: Setup Pages Configuration
@@ -50,6 +52,16 @@ jobs:
         with:
           path: './public'
 
+  # --------------------------------------------------------------------------
+  # JOB 2: Deploy to GitHub Pages (Waits for Build Job to Finalize)
+  # --------------------------------------------------------------------------
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy Directly to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
