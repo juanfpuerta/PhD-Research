@@ -28,17 +28,17 @@ jobs:
       - name: Main Thesis Document
         uses: xu-cheng/latex-action@v3
         with:
-          root_file: Thesis_Main_Structure.tex
-          working_directory: Thesis
+          root_file: Thesis/Thesis_Main_Structure.tex
+          work_in_root_file_dir: true
           compiler: latexmk
-          args: -pdf -file-line-error -interaction=nonstopmode
+          args: -pdf -file-line-error -interaction=nonstopmode -f
 
       - name: Stage Deployment Directory
         run: |
           mkdir -p public
-          # Copy compiled Thesis PDF from the Thesis directory
+          # Copy compiled PDF from the Thesis directory
           cp Thesis/Thesis_Main_Structure.pdf public/Thesis_Main_Structure.pdf
-          # Copy website files and assets from root
+          # Copy website files and static assets
           cp index.html public/ 2>/dev/null || true
           cp *.png public/ 2>/dev/null || true
 
