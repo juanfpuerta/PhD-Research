@@ -1,4 +1,4 @@
-name: Compile Beamer Slides & Deploy Hub
+name: Build Manuscripts and Deploy GitHub Pages
 on:
   push:
     branches:
@@ -23,33 +23,35 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Compile Section 1 Presentation
+      - name: Main Thesis Document
         uses: xu-cheng/latex-action@v3
         with:
-          root_file: Astrodynamics_Content_1.tex
+          root_file: Thesis/Thesis_Main_Strucutre.tex
           compiler: latexmk
           args: -pdf -file-line-error -interaction=nonstopmode
 
-      - name: Compile Section 2 Presentation
-        uses: xu-cheng/latex-action@v3
-        with:
-          root_file: Astrodynamics_Content_2.tex
-          compiler: latexmk
-          args: -pdf -file-line-error -interaction=nonstopmode
+     # - name: Compile Section 2 Presentation
+     #   uses: xu-cheng/latex-action@v3
+     #   with:
+     #     root_file: Astrodynamics_Content_2.tex
+     #     compiler: latexmk
+     #     args: -pdf -file-line-error -interaction=nonstopmode
 
-      - name: Compile Section 2 Presentation
-        uses: xu-cheng/latex-action@v3
-        with:
-          root_file: RAAN_Change_Explanation.tex
-          compiler: latexmk
-          args: -pdf -file-line-error -interaction=nonstopmode
+     # - name: Compile Section 2 Presentation
+     #   uses: xu-cheng/latex-action@v3
+     #   with:
+     #     root_file: RAAN_Change_Explanation.tex
+     #     compiler: latexmk
+     #     args: -pdf -file-line-error -interaction=nonstopmode
 
       - name: Stage Deployment Directory
         run: |
           mkdir -p public
-          mv Astrodynamics_Content_1.pdf public/Astrodynamics_Section_1.pdf
-          mv Astrodynamics_Content_2.pdf public/Astrodynamics_Section_2.pdf
-          mv RAAN_Change_Explanation.pdf public/RAAN_Change_Explanation.pdf
+          mv Thesis_Main_Strucutre.pdf public/Thesis_Main_Strucutre.pdf
+          # mv Astrodynamics_Content_2.pdf
+          # public/Astrodynamics_Section_2.pdf
+          # mv RAAN_Change_Explanation.pdf 
+          # public/RAAN_Change_Explanation.pdf
           cp *.{html,png} public/ 2>/dev/null || true
 
       - name: Setup Pages Configuration
