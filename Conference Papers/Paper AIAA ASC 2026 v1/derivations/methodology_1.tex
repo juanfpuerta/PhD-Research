@@ -1,0 +1,71 @@
+\documentclass[letterpaper, paper,11pt]{AAS}
+
+\usepackage{bm}
+\usepackage{amsmath}
+\usepackage{subfigure}
+\usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=black, citecolor= black, urlcolor= black]{hyperref}
+\usepackage{overcite}
+\usepackage{footnpag}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{comment}
+\usepackage{booktabs}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+\tikzstyle{process} = [rectangle, minimum width=3.5cm, minimum height=1cm, text centered, draw=black, fill=blue!10]
+\tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=yellow!20]
+\tikzstyle{startstop} = [ellipse, minimum width=3cm, text centered, draw=black, fill=red!20]
+\tikzstyle{arrow} = [thick, ->, >=stealth]
+\PaperNumber{25-787}
+
+\begin{document}
+
+\section{Methodology}
+
+\subsection{Hybrid Symplectic-Explicit Integration Scheme}
+To accurately model the long-term evolution of space debris in the Low Earth Orbit (LEO) environment, the numerical integrator must satisfy two competing requirements: the preservation of the Hamiltonian flow over multi-decade timescales and the incorporation of dissipative, non-conservative forces. While symplectic integrators excel at the former, they are inherently designed for conservative systems and are disrupted by forces such as atmospheric drag.
+
+To resolve this, we propose a hybrid semi-symplectic architecture based on a second-order Strang splitting scheme \cite{Puerta2025}. We partition the total acceleration acting on the $i$-th fragment into a conservative gravitational component ($\mathbf{a}_{grav}$) and a perturbative non-conservative component ($\mathbf{a}_{pert}$):
+
+\begin{equation}
+    \frac{d\mathbf{v}_i}{dt} = \mathbf{a}_{grav} + \mathbf{a}_{pert}
+\end{equation}
+
+The conservative component is governed entirely by Hamiltonian mechanics, representing the $N$-body gravitational interactions. Crucially, to accurately capture long-term lunisolar resonances without breaking the symplectic structure, the Sun and Moon are initialized as massive particles within the primary system rather than being treated as external ephemeris perturbations. The Hamiltonian is thus defined as:
+
+\begin{equation}
+    \mathcal{H} = \mathcal{H}_{Kepler} + \mathcal{H}_{J_{2-6}} + \mathcal{H}_{Sun} + \mathcal{H}_{Moon}
+\end{equation}
+
+The non-conservative component comprises atmospheric drag and Solar Radiation Pressure (SRP), defined respectively as:
+
+\begin{equation}
+    \mathbf{a}_{pert} = -\frac{1}{2} C_D \frac{A}{m} \rho \left\| \mathbf{v}_{rel} \right\| \mathbf{v}_{rel} - P_{SRP} \frac{A}{m} (1 + C_R) \mathbf{\hat{r}}_{sun}
+\end{equation}
+
+where $A/m$ is the fragment's area-to-mass ratio derived from the NASA Standard Breakup Model, $C_D$ is the drag coefficient, $\rho$ is the local atmospheric density, $P_{SRP}$ is the solar radiation pressure, and $C_R$ is the reflectivity coefficient.
+
+\subsection{Operator Splitting Implementation}
+Rather than evaluating the perturbative forces continuously, which degrades the phase-space volume preservation of the WHFast algorithm, we apply the non-conservative forces via an operator splitting technique. Let $\Phi_G(\Delta t)$ denote the exact or numerically accurate flow of the symplectic gravity-only system, and $\Phi_P(\Delta t)$ denote the flow of the dissipative perturbations. The total evolution operator $\Phi(\Delta t)$ is approximated symmetrically:
+
+\begin{equation}
+    \Phi(\Delta t) \approx \Phi_P\left(\frac{\Delta t}{2}\right) \circ \Phi_G(\Delta t) \circ \Phi_P\left(\frac{\Delta t}{2}\right)
+\end{equation}
+
+Computationally, this is achieved by bypassing the default continuous integration wrapper in the \texttt{REBOUND} architecture. We construct a customized control loop where the fragment velocities are explicitly updated via an Euler step for $\Delta t / 2$ based solely on $\mathbf{a}_{pert}$. The state is then handed to the WHFast symplectic integrator for a full $\Delta t$ step to advance the Hamiltonian system. Finally, a second half-step velocity update is applied. 
+
+Physical properties such as $A/m$ and $C_D$ are managed efficiently in memory using the \texttt{REBOUNDx} extension API, allowing the explicitly calculated drag and SRP to map perfectly to individual fragment trajectories. Because the Sun's position is natively propagated within the symplectic step, the instantaneous unit vector $\mathbf{\hat{r}}_{sun}$ required for the SRP calculation is extracted directly from the $N$-body state, eliminating the computational overhead of continuous external ephemeris queries.
+
+\section*{Novelty and Technical Contributions}
+
+This research presents a significant advancement over previous debris fragmentation frameworks \cite{Puerta2025} by implementing and validating a high-fidelity, hybrid semi-symplectic propagator within the REBOUNDx N-body architecture[cite: 104, 105]. The primary novelty of this work is the rigorous integration of $J_2$ gravitational harmonics into a structure-preserving splitting scheme specifically designed to handle the dissipative nature of the Low Earth Orbit (LEO) environment[cite: 33, 41]. 
+
+Key contributions include:
+\begin{itemize}
+    \item The implementation of a second-order Strang splitting technique that separates the Hamiltonian gravitational flow from non-conservative perturbations, including atmospheric drag and solar radiation pressure (SRP)[cite: 42, 43, 85].
+    \item Rigorous validation of numerical results against first-order analytical theories for nodal and apsidal precession rates ($\dot{\Omega}$ and $\dot{\omega}$), ensuring physical consistency over long-term propagations.
+    \item Demonstration of computational scalability and stability for massive fragmentation events involving up to $50,000$ objects, facilitating comprehensive collision risk assessments and backward-time event reconstruction[cite: 97, 106, 108].
+\end{itemize}
+
+Unlike traditional Runge-Kutta based methods that suffer from energy drift in long-duration debris studies [cite: 26, 103], this hybrid approach maintains the geometric properties of the orbital phase space while capturing the realistic decay trajectories necessary for sustainable space traffic management[cite: 28, 30].
+
+\end{document}

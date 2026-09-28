@@ -1,0 +1,379 @@
+\documentclass[presentation,10pt,aspectratio=169]{beamer}
+
+% --- Essential Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage{bm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{tikz}
+
+% --- Theme and Visual Setup ---
+\usetheme{Madrid}
+\usecolortheme{whale}
+\useinnertheme{rounded}
+\useoutertheme{infolines}
+\usefonttheme{professionalfonts}
+
+\setbeamertemplate{navigation symbols}{}
+
+% --- Professional Color Palette ---
+\definecolor{UdeAGreen}{RGB}{0, 111, 61}
+\definecolor{OdysseyBlue}{RGB}{28, 117, 188}
+\definecolor{PhysicsOrange}{RGB}{230, 108, 44}
+\definecolor{StructureGray}{RGB}{80, 80, 80}
+
+\setbeamercolor{titlelike}{parent=palette primary,fg=white,bg=UdeAGreen}
+\setbeamercolor{block title}{bg=UdeAGreen,fg=white}
+\setbeamercolor{block body}{bg=black!5,fg=black}
+\setbeamercolor{block title example}{bg=OdysseyBlue,fg=white}
+\setbeamercolor{block body example}{bg=black!5,fg=black}
+
+% --- Define Footer Custom Colors Globally ---
+\setbeamercolor{author in head/foot}{bg=UdeAGreen,fg=white}
+\setbeamercolor{title in head/foot}{bg=UdeAGreen!90!black,fg=white}
+\setbeamercolor{date in head/foot}{bg=UdeAGreen!80!black,fg=white}
+
+% --- Robust Non-Overlapping Custom Footline (Baseline Correction) ---
+\setbeamertemplate{footline}{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.35\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+    \usebeamerfont{author in head/foot}\insertshortauthor~(\insertshortinstitute)%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.40\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+    \usebeamerfont{title in head/foot}\insertshorttitle%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.25\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+    \usebeamerfont{date in head/foot}\insertshortdate\hspace*{2em}\insertframenumber{} / \inserttotalframenumber\hspace*{2ex}%
+  \end{beamercolorbox}}%
+  \vspace{0pt}%
+}
+
+% --- Non-Intrusive Top-Right Corner Logos for Content Slides ---
+\addtobeamertemplate{frametitle}{}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=north east, xshift=-0.3cm, yshift=-0.1cm] at (current page.north east) {
+      \includegraphics[height=0.35cm]{UdeA+simplificado-01.png}\hspace{0.15cm}\includegraphics[height=0.35cm]{OSR_Logo.png}
+    };
+  \end{tikzpicture}%
+}
+
+% --- Metadata Preamble ---
+\title[Hybrid Propagator (2026)]{Advanced Validation of a High-Fidelity Hybrid Symplectic Propagator for Massive Space Debris Fragmentation Analysis}
+\subtitle{Paper AAS 26-993}
+\author[Puerta-Ibarra et al.]{Juan F. Puerta-Ibarra\inst{1} \and Bonnie Prado Pino\inst{2} \and Nicolas Mu\~noz-Galeano\inst{1}}
+\institute[UdeA / OSR]{
+  \inst{1}Universidad de Antioquia, Medell\'in, Colombia \and
+  \inst{2}Odyssey Space Research LLC, Houston, TX, USA
+}
+\date[AAS/AIAA ASC 2026]{2026 AAS/AIAA Astrodynamics Specialist Conference}
+
+\begin{document}
+
+% ==============================================================================
+% SLIDE 1: TITLE
+% ==============================================================================
+\begin{frame}[plain]
+    \titlepage
+    \vspace{-0.2cm}
+    \begin{center}
+        \includegraphics[height=0.7cm]{UdeA+simplificado-01.png}%
+        \hspace{0.6cm}%
+        \includegraphics[height=0.7cm]{OSR_Logo.png}
+        \par\vspace{0.15cm}
+        \footnotesize \textcolor{StructureGray}{Building upon computational methods established in AAS 25-787}
+    \end{center}
+\end{frame}
+
+% ==============================================================================
+% SLIDE 2: THE 2025 BASELINE & NEW NEED (COMPACTED & SHRUNK FOR CANVASES)
+% ==============================================================================
+\begin{frame}{Introduction: Building Upon the 2025 Baseline}
+    \vspace*{-0.3cm}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \small
+            \begin{block}{AAS 25-787 Legacy Framework}
+                \begin{itemize}
+                    \item Conservative geopotential updates ($Central + J_2/J_4$) handled via high-speed WHFast integrations[cite: 1].
+                    \item Sub-kilometer agreement with NASA's GMAT across 20,000 objects over a 24-hr simulation window[cite: 1].
+                \end{itemize}
+            \end{block}
+            \begin{alertblock}{The 2026 Dissipative Necessity}
+                \begin{itemize}
+                    \item Long-duration cycles require accurate modeling of non-conservative atmospheric perturbations[cite: 1, 2].
+                    \item Aero drag and Solar Radiation Pressure (SRP) act as vital energy-dissipation elements in LEO[cite: 1, 2].
+                \end{itemize}
+            \end{alertblock}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \centering
+            \vspace{0.1cm}
+            \includegraphics[width=\linewidth,height=0.48\textheight,keepaspectratio]{derivations/Space_debris_surrounding_Earth.jpg}
+            \par\vspace{0.1cm}
+            \centering\tiny\textcolor{StructureGray}{ESA's short documentary film `Space Debris: Is it a Crisis?'}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% ==============================================================================
+% SLIDE 3: SYMMETRIC STRANG SPLITTING
+% ==============================================================================
+\begin{frame}{Methodology: Second-Order Symmetric Strang Splitting}
+    \vspace*{-0.3cm}
+    To incorporate non-Hamiltonian components without destabilizing symplectic qualitative conservation, the total evolution operator $\Phi(\Delta t)$ undergoes symmetric decomposition[cite: 1, 3]:
+    \begin{equation*}
+        \Phi(\Delta t) \approx \Phi_{P}\left(\frac{\Delta t}{2}\right) \circ \Phi_{G}(\Delta t) \circ \Phi_{P}\left(\frac{\Delta t}{2}\right)
+    \end{equation*}
+    
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \small
+            \begin{block}{The Three-Phase Timestep ($\Delta t = 10$~s)}
+                \begin{enumerate}
+                    \item \textbf{Phase 1 ($\Phi_P$ Half-Step):} Velocity update via instantaneous drag and SRP model calculations[cite: 1, 3].
+                    \item \textbf{Phase 2 ($\Phi_G$ Full Step):} Stable geopotential integration ($J_2/J_4$) via compiled WHFast N-body solver[cite: 1, 3].
+                    \item \textbf{Phase 3 ($\Phi_P$ Half-Step):} Symmetric velocity adjustment using recomputed states[cite: 1, 3].
+                \end{enumerate}
+            \end{block}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \centering
+            \vspace{0.1cm}
+            \includegraphics[width=\linewidth,height=0.48\textheight,keepaspectratio]{splitting_flowchart_v2.png}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% ==============================================================================
+% SLIDE 4: PHASE 1 — PINN THERMOSPHERIC SURROGATE (EQUATION ADJUSTMENT)
+% ==============================================================================
+\begin{frame}{Phase 1: Physics-Informed Neural Network (PINN) Surrogate}
+    \vspace*{-0.3cm}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \small
+            \begin{itemize}
+                \item \textbf{The Lookup Bottleneck:} Piecewise exponential models create non-differentiable boundary steps ($\mathcal{C}^0$), injecting numerical noise[cite: 1, 3].
+                \item \textbf{The Solution:} Train an analytical network $\mathcal{N}_\theta: h \to \hat{\rho}$ regularized by the underlying physics PDE[cite: 1, 3].
+            \end{itemize}
+            \begin{exampleblock}{Composite Loss Formulation}
+                \footnotesize
+                \[ \mathcal{L}_{Total}(\theta) = \mathcal{L}_{Data}(\theta) + \lambda \mathcal{L}_{Physics}(\theta) \]
+                \[ \mathcal{L}_{Physics}(\theta) = \frac{1}{N_c} \sum_{j=1}^{N_c} \left\| \frac{d\mathcal{N}_\theta(h_j)}{dh} + \frac{\mathcal{N}_\theta(h_j)}{H(h_j)} \right\|^2 \]
+            \end{exampleblock}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \centering
+            \vspace{0.1cm}
+            \includegraphics[width=\linewidth,height=0.48\textheight,keepaspectratio]{derivations/PINN_Phase1.png}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% ==============================================================================
+% SLIDE 5: PHASE 1 — CONVERGENCE PROFILE (DEFENSIVE HEIGHT DOWNGRADE)
+% ==============================================================================
+\begin{frame}{Phase 1 Evaluation: Convergence \& Verification}
+    \vspace*{-0.2cm}
+    \begin{columns}[c]
+        \begin{column}{0.48\textwidth}
+            \centering
+            \textbf{\footnotesize Dual-Loss Log-Convergence Profile}
+            \vspace{0.05cm}
+            \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{derivations/fig1_pinn_loss.png}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \centering
+            \textbf{\footnotesize Vertical Density Field Validation}
+            \vspace{0.05cm}
+            \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{derivations/fig2_density_profile.png}
+        \end{column}
+    \end{columns}
+    \vspace{0.1cm}
+    \centering\small
+    \textcolor{UdeAGreen}{\textbf{Result:}} Joint optimization successfully guarantees continuous, smooth mass-decay derivatives without unphysical bounding ripples[cite: 1, 3].
+\end{frame}
+
+% ==============================================================================
+% SLIDE 6: PHASE 2 — GEOMETRIC PRUNING (COMPACTED TEXT FOR CANVASES)
+% ==============================================================================
+\begin{frame}{Phase 2: Breaking the Conjunction $\mathcal{O}(N^2)$ Trap}
+    \vspace*{-0.3cm}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \small
+            \begin{itemize}
+                \item All-on-all distance loops scale quadratically, introducing critical latencies at ultra-high-densities ($N=50,000$)[cite: 1, 3].
+                \item \textbf{KD-Tree Space Decomposition:} Partition continuous 3D Euclidean coordinate space recursively along orthogonal median planes[cite: 1, 3].
+            \end{itemize}
+            \begin{block}{Localized Neighborhood Query}
+                \footnotesize
+                \[ d(\mathbf{r}_{target}, \mathbf{r}_j) = \left\| \mathbf{r}_{target} - \mathbf{r}_j \right\|_2 \le R_{filter} \]
+                \begin{itemize}
+                    \item Filters for proximal pairings ($k \ll N$) within a screening boundary ($R_{filter} = 50$~km)[cite: 1, 3].
+                    \item Truncates conjunction search burden to an asymptotically scalable $\mathcal{O}(N \log N)$ footprint[cite: 1, 3].
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \centering
+            \vspace{0.1cm}
+            \includegraphics[width=\linewidth,height=0.48\textheight,keepaspectratio]{derivations/LSTM_Phase2.png}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% ==============================================================================
+% SLIDE 7: PHASE 2 — LSTM PERFORMANCE (DEFENSIVE HEIGHT DOWNGRADE)
+% ==============================================================================
+\begin{frame}{Phase 2 Evaluation: Conjunction Sequence Matrices}
+    \vspace*{-0.2cm}
+    \begin{columns}[c]
+        \begin{column}{0.48\textwidth}
+            \centering
+            \textbf{\footnotesize 3D Spatial Clustered Neighborhood Selection}
+            \vspace{0.05cm}
+            \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{derivations/fig3_kdtree.png}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \centering
+            \textbf{\footnotesize LSTM Kinematic Arc Confusion Matrix}
+            \vspace{0.05cm}
+            \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{derivations/fig4_confusion_matrix.png}
+        \end{column}
+    \end{columns}
+    \vspace{0.1cm}
+    \centering\small
+    \textcolor{UdeAGreen}{\textbf{Result:}} The sequence architecture captures subtle variations in non-conservative energy decay with perfect recall despite massive class imbalances[cite: 1, 3].
+\end{frame}
+
+% ==============================================================================
+% SLIDE 8: PHASE 3 — INVERSE TARGETING
+% ==============================================================================
+\begin{frame}{Phase 3: Event Reconstruction via Shared RAM Pointer Bridge}
+    \vspace*{-0.3cm}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \small
+            \begin{itemize}
+                \item \textbf{The Inverse Problem:} Estimate the initial origin epoch ($\delta t$), spatial coordinates, and breakup distribution velocity spread from sparse snapshots[cite: 1, 3].
+                \item \textbf{The Challenge:} Traditional disk-bound text file generation loops introduce severe pipeline serialization latencies[cite: 1, 3].
+                \item \textbf{Shared Memory Architecture:} Links the C integrator directly into Python Gymnasium environments via low-overhead \texttt{ctypes} pointers[cite: 1, 3].
+            \end{itemize}
+            \begin{block}{Macro-Scale Moment Matching Reward}
+                \footnotesize
+                \[ R_t = - \frac{1}{C} \sqrt{ \left\| \boldsymbol{\mu}_{sim} - \boldsymbol{\mu}_{obs} \right\|_2^2 + \left\| \boldsymbol{\sigma}_{sim} - \boldsymbol{\sigma}_{obs} \right\|_2^2 } \]
+            \end{block}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \centering
+            \vspace{0.1cm}
+            \includegraphics[width=\linewidth,height=0.48\textheight,keepaspectratio]{derivations/RL_Phase3.png}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% ==============================================================================
+% SLIDE 9: PHASE 3 — PPO RESULTS (DEFENSIVE HEIGHT DOWNGRADE)
+% ==============================================================================
+\begin{frame}{Phase 3 Evaluation: Pilot Gradient Trajectory Capture}
+    \vspace*{-0.2cm}
+    \begin{columns}[c]
+        \begin{column}{0.48\textwidth}
+            \centering
+            \textbf{\footnotesize PPO Initial Episode Loss Adaptation}
+            \vspace{0.05cm}
+            \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{derivations/fig5_rl_convergence.png}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \centering
+            \textbf{\footnotesize 3D Pilot Reconstruction Tracking Vector}
+            \vspace{0.05cm}
+            \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{derivations/fig6_reconstruction.png}
+        \end{column}
+    \end{columns}
+    \vspace{0.1cm}
+    \centering\small
+    \textcolor{PhysicsOrange}{\textbf{Engineering Note:}} Truncated 100k pilot run acts as an architectural proof-of-concept. Scaling to a distributed HPC cluster is required to minimize final line residuals[cite: 3].
+\end{frame}
+
+% ==============================================================================
+% SLIDE 10: ALGORITHMIC SCALABILITY CHART
+% ==============================================================================
+\begin{frame}{System Verification: Algorithmic Power-Law Scaling}
+    \vspace*{-0.3cm}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \small
+            \begin{block}{Preservation of Efficiency}
+                \begin{itemize}
+                    \item Complete pipeline benchmarked across 4 orders of magnitude ($N=50$ to $50,000$ independent fragments)[cite: 1, 3].
+                    \item Avoids standard quadratic explosions ($\mathcal{O}(N^2)$), tracking strictly parallel to the geopotential baseline[cite: 1, 3].
+                    \item Confirms an asymptotically scalable power-law performance exponent of approximately $\mathcal{O}(N^{1.60})$[cite: 1, 3].
+                \end{itemize}
+            \end{block}
+            \centering
+            \vspace{0.05cm}
+            \textcolor{UdeAGreen}{\textbf{Core Mechanism:}} Parallel vectorized tensor evaluations coupled with localized tree domain pruning successfully absorb non-conservative physical latencies[cite: 1, 3].
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \centering
+            \vspace{0.1cm}
+            \includegraphics[width=\linewidth,height=0.48\textheight,keepaspectratio]{derivations/PowerLaw2026.png}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% ==============================================================================
+% SLIDE 11: CRITICAL ARCHITECTURAL TRADE-OFF MATRIX
+% ==============================================================================
+\begin{frame}{Architectural Trade-Off Analysis: Framework Pros \& Cons}
+    \vspace*{-0.2cm}
+    \begin{table}
+        \small
+        \centering
+        \begin{tabular}{p{0.46\textwidth} p{0.48\textwidth}}
+            \toprule
+            \textbf{Engineering Strengths (Pros)} & \textbf{Structural Constraints (Cons)} \\
+            \midrule
+            Maintenance of the baseline $\mathcal{O}(N^{1.60})$ power-law processing slope[cite: 1, 3]. & Constant vertical latency shift due to continuous network model inference overhead[cite: 1, 3]. \\ \addlinespace
+            Continuous, $\mathcal{C}^\infty$-differentiable fields completely bypass interpolation discontinuities[cite: 1, 3]. & Crossover threshold ($N \approx 500$) below which standard analytical integration is superior[cite: 1, 3]. \\ \addlinespace
+            Direct pointer memory bridge eliminates slow file-serialization bottlenecks[cite: 1, 3]. & Massive array allocation within RAM introduces workstation memory boundaries at $N \ge 500,000$[cite: 1, 3]. \\ \addlinespace
+            Macro-scale moment calculations prune combinatorial association demands[cite: 1, 3]. & Out-of-domain performance degradation when subjected to uncalibrated solar storm fluxes[cite: 1, 3]. \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+% ==============================================================================
+% SLIDE 12: CONCLUSIONS & ROADMAP
+% ==============================================================================
+\begin{frame}{Conclusions \& Operational Horizons}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Core Achievements}
+                \begin{itemize}
+                    \item Reconciled semi-symplectic numerical integration stability with dissipative physics using second-order Strang splitting[cite: 1, 3].
+                    \item Maintained strict physical limits on relative secular energy drifts ($10^{-8}$ to $10^{-7}$)[cite: 1, 3].
+                    \item Proved the feasibility of localized neural surrogates and memory-cached pointer arrays[cite: 1, 3].
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \begin{exampleblock}{The Next Frontiers}
+                \begin{itemize}
+                    \item \textbf{HPC Cluster Scaling:} Transition from local workstation cores to distributed multi-node clusters to reach $10^7$ optimization horizons[cite: 3].
+                    \item \textbf{Attention-Based Models:} Integrate spatial-temporal Transformers to handle multi-body cislunar gravity fields[cite: 3].
+                    \item \textbf{Temporal Inversion:} Exploit time-reversible flow parameters for true autonomous backward-in-time orbital propagation[cite: 3].
+                \end{itemize}
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+    \vspace{0.4cm}
+    \centering
+    \footnotesize \textbf{Contact:} \texttt{juanf.puerta@udea.edu.co} \, | \, \textbf{Repository:} \texttt{[INSERT: GitHub / Presentation Link QR Box]}
+\end{frame}
+
+\end{document}

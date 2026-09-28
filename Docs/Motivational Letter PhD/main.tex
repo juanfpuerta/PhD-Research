@@ -1,0 +1,58 @@
+\documentclass[11pt]{article} %Type of document
+\usepackage[english,]{babel} %Languages
+\usepackage[T1]{fontenc} %Font Package
+\usepackage{charter} %Font Type
+\usepackage{geometry}
+\geometry{letterpaper, portrait, margin=2cm}
+\usepackage{graphicx} % Required for inserting images
+\graphicspath{{images/}} %configuring the graphicx package
+\usepackage{parskip} % No Indent
+\renewcommand{\baselinestretch}{1.5} % Line Spacing
+\setlength{\parskip}{1em} % Pararaph Separation
+\usepackage{pifont} % Itemize symbols
+\renewcommand{\labelitemi}{\ding{111}} % Type of itemize symbol
+\usepackage{hyperref} % hyperlink types
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+
+\title{Orbital Dynamics of Spacecraft Fragmentation for Sustainable Space Exploration}
+\author{Juan Francisco Puerta Ibarra.}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The proposed research, within the PhD in Engineering and GIMEL Research group, is to study the dynamics of spacecraft fragmentation~\cite{mains2022impact} and its impact on the sustainability of space exploration, orbital conjunction events and also to create some tools for space mission design, according to the growing problem of Low Earth Orbit (LEO) debris population. Numerical analysis, space objects database and explosion and collision events are required to analyze and simulate the propagation of fragmentation debris of spacecraft and track, not only the resulting objects, but also create models to propagate backwards and track the origin of the elements in actual orbit~\cite{setty2016application}, as well as analyze the potential effects of different types of collisions and other events that can lead to fragmentation. This research will contribute to the development of more effective debris mitigation strategies and enable the continued exploration and utilization of different orbits in space exploration and utilization.
+\end{abstract}
+
+\section{Introduction}
+
+The exploration of space has become an important matter for many countries around the world and for private companies, the commercialization of it in this new era. With increasing advancements in space technology, more spacecraft are being launched into orbit to gather data, create revenue and expand our knowledge of the universe. However, the continued growth of space debris resulting from the fragmentation of these assets poses a serious threat to the sustainability of space exploration. This is where my focus of interest and passion for astrodynamics and space sustainability subject related to spacecraft break ups~\cite{limonta2021fragmentation} for space debris forensic analysis comes in.
+
+\section{Theoretical Framework}
+
+The dynamics of spacecraft fragmentation is a complex problem that involves multiple physical processes such as collisions, explosions, and gravitational interactions, and space weather must be included to characterize the problem correctly, due to the extreme operational conditions. The fragmentation process can be modelled, in a first stage, using numerical integration techniques~\cite{frey2019extension}, such as Runge-Kutta or Prince-Dormand, i.e., for getting the state vector (position and velocity of space objects) or their orbital elements (semi-major axis, eccentricity, inclination, etc.) and then propagate its orbit in backward of forward direction, depending of the ephemerides of the event. One initial idea is to get the latest state vector with their TLE (Two Line Element) information and simulate it going  backwards and find how the particles were ejected after the fragmentation event. By Using smoothed particle hydrodynamics (SPH) method, which is commonly used in astrophysics and engineering applications, it could allowed the simulation of large deformations and can represent multiple debris objects. 
+
+The effects of spacecraft fragmentation on space sustainability can be analyzed using various metrics, such as the creation of new debris, the risk of collision with operational spacecraft, and the potential impact on scientific observations. The mitigation of space debris can be achieved through various methods such as active debris removal and collision avoidance techniques. The effectiveness of these methods can be assessed through more precise numerical simulations and statistical analyses.
+
+\section{Discussion}
+
+The proposed research will contribute to the development of more accurate and effective models for the dynamics of spacecraft fragmentation. These models will enable the prediction of the creation and evolution of debris clouds resulting from break up events, and the analysis of the impact of these debris clouds on operational spacecraft and space missions. This research can also inform the development of debris mitigation strategies, such as active debris removal and collision avoidance techniques, that can minimize the risk of future collisions and limit the growth of space debris.
+
+The study of spacecraft fragmentation models is also important for the sustainability of space exploration. With more and more countries and private companies investing in space technology, the potential for collisions and fragmentation events will only increase. The continued growth of space debris poses a significant threat to the sustainability of space exploration and can limit the ability of future generations to utilize and explore space. By studying spacecraft fragmentation models, we can develop effective mitigation strategies that can help ensure the continued exploration and utilization of space for years to come.
+
+\section{Conclusion}
+
+The proposed research will contribute to the development of more accurate and effective models for the dynamics of spacecraft fragmentation, and will enable the prediction of the creation and evolution of debris clouds resulting from fragmentation events. This research will also inform the development of debris mitigation strategies that can help ensure the continued exploration and utilization of space for years to come. With increasing investments in space technology, the study of spacecraft fragmentation models is crucial for the sustainability of space exploration and the protection of our valuable space assets. One definition that could be acquired is \textit{Space Forensic Orbit Determination and Analysis - SFODA} for all the process going to the past to know the origin of events, and planning new missions to predict when and where the spacecraft could be in danger or requiring to execute an orbital maneuver to reduce risks.
+
+\bibliography{mybibliography.bib}
+\bibliographystyle{unsrt}
+
+\end{document}

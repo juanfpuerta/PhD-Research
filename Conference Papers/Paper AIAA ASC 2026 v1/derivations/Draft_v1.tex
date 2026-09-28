@@ -1,0 +1,71 @@
+\documentclass[conf]{AAS} % Standard AAS/AIAA Template Class
+\usepackage{amsmath, amssymb, graphicx, hyperref, booktabs}
+
+\title{Advanced Validation of a High-Fidelity Hybrid Symplectic Propagator for Massive Space Debris Fragmentation Analysis}
+
+\author{Juan F. Puerta-Ibarra\thanks{Professor, Department of Mechanical and Aerospace Engineering, Universidad de Antioquia.}, Bonnie Prado Pino\thanks{Design Engineer, Odyssey Space Research.}, and Nicolas Muñoz-Galeano\thanks{Professor, Department of Electrical Engineering, Universidad de Antioquia.}}
+
+\begin{document}
+
+\maketitle
+
+% -------------------------------------------------------------------
+% SUBMISSION PORTAL SUMMARY
+% -------------------------------------------------------------------
+% This paper validates a high-fidelity hybrid semi-symplectic propagator 
+% that evolves the framework presented in AAS 25-787. By integrating 
+% REBOUNDx with J2 gravitational harmonics, the system achieves 
+% analytical verification within 0.005\% error. The hybrid Strang-splitting 
+% approach enables the stable, long-term propagation of 50,000 fragments 
+% while incorporating non-conservative drag and SRP. Results demonstrate 
+% superior energy conservation over traditional integrators, facilitating 
+% robust collision risk forecasting and bidirectional event reconstruction.
+% -------------------------------------------------------------------
+
+\begin{abstract}
+This research presents the advancement of a computational framework for space debris fragmentation analysis, transitioning from the geopotential-only validation established in AAS 25-787 \cite{Puerta2025} to a high-fidelity, non-conservative propagation system. While previous work demonstrated the raw scalability and sub-kilometer positional accuracy of symplectic N-body methods for 20,000 objects in LEO \cite{Puerta2025}, the current study validates a hybrid semi-symplectic integration scheme that incorporates atmospheric drag and solar radiation pressure (SRP). Utilizing second-order Strang splitting via the REBOUNDx library, we achieve decadal-scale stability in dissipative environments. Numerical results for Earth's $J_2$ effect are verified against analytical secular theory with 0.005\% accuracy, and the framework's scalability is extended to handle massive fragmentation clouds of 50,000 fragments. This advancement enables bidirectional event reconstruction and long-term population forecasting, addressing critical gaps in orbital sustainability modeling.
+\end{abstract}
+
+\section{Introduction}
+The increasing presence of space debris, accelerated by the "NewSpace" era and large satellite constellations, poses a significant threat to orbital sustainability[cite: 130, 140]. Fragmentation events remain the primary contributors to this population, necessitating high-fidelity modeling to predict the evolution of the debris environment and avoid the onset of the Kessler syndrome[cite: 141, 142]. In previous research (AAS 25-787), a computational framework was established and benchmarked against high-fidelity tools like NASA's General Mission Analysis Tool (GMAT), demonstrating that N-body symplectic integrators can propagate large-scale populations (N=20,000) significantly faster than traditional tools while maintaining sub-kilometer positional agreement[cite: 133, 134].
+
+However, that initial validation focused primarily on geopotential perturbations ($J_2$ and $J_4$) and identified the integration of non-conservative forces as a critical future requirement for realistic debris evolution studies[cite: 131, 672]. This current study addresses that requirement by implementing a modular hybrid "splitting" architecture. Unlike traditional general-purpose integrators such as Cowell's method or Runge-Kutta, which can accumulate significant numerical errors over long durations[cite: 429, 432], the proposed method separates the Hamiltonian gravitational flow from dissipative drag and SRP components.
+
+\section{Methodology}
+The dynamics of space debris in Low Earth Orbit (LEO) are governed by the interplay between conservative gravitational potentials and non-conservative environmental perturbations. The total acceleration acting on a debris fragment is defined as:
+\begin{equation}
+    \frac{d\mathbf{v}}{dt} = \mathbf{a}_{grav} + \mathbf{a}_{drag} + \mathbf{a}_{SRP}
+\end{equation}
+where $\mathbf{a}_{grav}$ includes the central point-mass and the $J_2/J_4$ zonal harmonics.
+
+\subsection{Hybrid Semi-Symplectic Strategy}
+To address the challenges of energy dissipation and secular drift associated with traditional integrators, this framework utilizes a hybrid semi-symplectic approach based on second-order Strang splitting. The total evolution operator $\Phi(\Delta t)$ is decomposed into two distinct flows:
+\begin{itemize}
+    \item \textbf{Hamiltonian Flow ($\Phi_G$):} Handles conservative forces using the WHFast symplectic N-body integrator to preserve the phase-space structure of the gravitational system.
+    \item \textbf{Perturbative Flow ($\Phi_P$):} Incorporates non-conservative forces (drag and SRP) as discrete velocity corrections, preventing them from disrupting the symplectic step.
+\end{itemize}
+
+The integration follows a symmetric sequence to maintain second-order accuracy:
+\begin{equation}
+    \Phi(\Delta t) \approx \Phi_P\left(\frac{\Delta t}{2}\right) \circ \Phi_G(\Delta t) \circ \Phi_P\left(\frac{\Delta t}{2}\right)
+\end{equation}
+By applying perturbations in half-steps flanking the symplectic gravity step, the framework minimizes energy error growth while capturing the gradual orbital decay characteristic of the LEO environment.
+
+\section{Verification and Validation}
+The framework was verified by comparing numerical nodal precession ($\dot{\Omega}$) and apsidal precession ($\dot{\omega}$) against analytical first-order theories[cite: 86]. Numerical experiments for a benchmark satellite at 600 km altitude demonstrated that the simulated rates aligned with analytical predictions within a relative error of 0.005\% over annual timescales. This level of precision confirms that the $J_2$ effect is correctly integrated into the symplectic splitting flow, representing a significant verification improvement over the positional-difference metrics used in the 2025 study.
+
+\section{Results and Discussion}
+The performance of the propagator was evaluated using a simulation of a catastrophic fragmentation event producing 50,000 fragments[cite: 35]. This represents a 150\% increase in population scale compared to the 20,000-object benchmark of 2025.
+
+Within the simulation, clear "orbital sorting" was observed, where fragments with higher area-to-mass ratios ($A/m$) exhibited accelerated orbital decay, while lower $A/m$ fragments remained in stable, precessing orbits[cite: 107]. Compared to the RK4 methods discussed in previous framework iterations, the current hybrid scheme maintained superior energy stability, allowing for a larger integration step ($\Delta t = 10$ s) while maintaining a fidelity that matches high-fidelity GMAT benchmarks[cite: 567, 664].
+
+\section{Conclusion and Future Work}
+This research demonstrates a validated, high-fidelity tool for long-term space debris analysis, effectively evolving the modular framework established in 2025 \cite{Puerta2025}. By bridging the gap between structure-preserving N-body dynamics and dissipative orbital decay, the framework provides a robust baseline for mission planning and space traffic management. While current verification focused on $J_2$, the framework is architected for the modular incorporation of higher-order harmonics such as $J_3$ and $J_4$. Future work will integrate real-time space weather data to further refine atmospheric density modeling during solar maximums.
+
+\section*{Acknowledgments}
+The authors acknowledge the support of the Department of Mechanical and Aerospace Engineering at the Universidad de Antioquia. We also thank the developers of REBOUND and REBOUNDx for providing the modular platform that enabled these multi-body simulations.
+
+\bibliographystyle{AAS_ASCP_style}
+\bibliography{references}
+
+\end{document}

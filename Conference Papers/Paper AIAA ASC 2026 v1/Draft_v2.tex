@@ -1,0 +1,70 @@
+\documentclass[letterpaper, paper,11pt]{AAS}
+
+\usepackage{bm}
+\usepackage{amsmath}
+\usepackage{subfigure}
+\usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=black, citecolor= black, urlcolor= black]{hyperref}
+\usepackage{overcite}
+\usepackage{footnpag}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{comment}
+\usepackage{booktabs}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+
+\PaperNumber{XX-XXX}
+
+\begin{document}
+
+\title{Advanced Validation of a High-Fidelity Hybrid Symplectic Propagator for Massive Space Debris Fragmentation Analysis}
+
+\author{Juan F Puerta-Ibarra\thanks{Professor, Department of Mechanical and Aerospace Engineering, Universidad de Antioquia, Medellín - Colombia},  
+Bonnie Prado Pino\thanks{Adjunct Professor, Department of Mechanical and Aerospace Engineering, Universidad de Antioquia. Design Engineer, Odyssey Space Research, Houston, TX},
+\ and Nicolas Muñoz-Galeano \thanks{Professor, Department of Electrical Engineering, Universidad de Antioquia, Medellín - Colombia}
+}
+
+\maketitle
+
+\begin{abstract}
+Building upon the computational framework established in AAS 25-787\cite{puerta-ibarra_advanced_nodate}, this research validates a high-fidelity hybrid semi-symplectic propagator for massive space debris fragmentation analysis. The study transitions from geopotential-only models to a fully coupled system incorporating atmospheric drag and solar radiation pressure (SRP) through second-order Strang splitting. Utilizing symplectic propagation for Hamiltonian systems, the framework preserves the Hamiltonian structure of the gravitational flow while accurately capturing dissipative decay. Numerical results for Earth's $J_2$ effect are verified against analytical secular theory with 0.005\% accuracy over annual cycles. Furthermore, the framework's scalability is demonstrated through a 50,000-fragment simulation in Low Earth Orbit (LEO), identifying significant orbital sorting based on area-to-mass ratios. This advancement facilitates robust long-term population forecasting and bidirectional event reconstruction.
+\end{abstract}
+
+\section{Introduction}
+The fragmentation of space debris represents one of the most critical challenges to the long-term sustainability of the orbital environment. Since the inception of the space age, the population of artificial objects in Earth orbit has experienced exponential growth. As of 2023, tracking estimates indicate more than 35,000 objects larger than 10 cm in diameter, alongside a significantly larger population of small-scale, untrackable fragments that remain hazardous to operational assets\cite{european_space_agency_space_nodate}. This proliferation is further accelerated by the "NewSpace" era, characterized by the deployment of massive satellite constellations in Low Earth Orbit (LEO), which drastically increases the spatial density and collision probability in key orbital disere\cite{diserens_newspace_2020}.
+
+Fragmentation events—arising from accidental collisions, propulsion-related explosions, or structural failures—are the primary contributors to the debris population\cite{puerta-ibarra_advanced_nodate}. A central concern is Kessler syndrome, a cascading scenario in which the object density becomes high enough that collisions trigger a self-sustaining chain reaction of further breakups\cite{kessler_collision_1978}. Historical landmarks, such as the 2007 Chinese anti-satellite (ASAT) test and the 2009 collision between Iridium 33 and Cosmos 2251, have already demonstrated the catastrophic potential of single events to generate thousands of long-lived fragments\cite{wang_analysis_2010}. 
+
+In previous research presented as AAS 25-787, a computational framework was established to address the scalability limitations of traditional mission analysis tools\cite{puerta-ibarra_advanced_nodate}. The 2025 framework demonstrated the efficiency of utilizing N-body symplectic integrators such as the REBOUND package, successfully propagating 20,000 objects in LEO with sub-kilometer positional agreement compared to NASA's General Mission Analysis Tool (GMAT)\cite{puerta-ibarra_advanced_nodate}. This research evolves the 2025 architecture by implementing a hybrid semi-symplectic integration scheme. Utilizing second-order Strang splitting, the propagator separates the Hamiltonian gravitational flow from dissipative forces, providing a validated, high-fidelity tool for analyzing debris cloud life-cycles.
+
+\section{Methodology}
+The numerical stability of the hybrid framework is grounded in the theory of backward error interpretation. As demonstrated by Sanz-Serna\cite{sanz-serna_symplectic_1992}, symplectic integrators applied to Hamiltonian systems generate numerical solutions that are the exact flow of a perturbed, modified Hamiltonian $H_{\infty} = H + \mathcal{O}(h^r)$. This explains the framework's ability to maintain bounded energy error; the computed points stay "very approximately" on the exact trajectories of this nearby Hamiltonian, effectively preventing the secular energy drift common in non-symplectic methods\cite{sanz-serna_symplectic_1992}.
+
+Following the findings of Calvo and Sanz-Serna regarding the limitations of variable step-sizes in symplectic schemes, this framework utilizes a constant step-size of $\Delta t = 10$ s\cite{sanz-serna_symplectic_1992}. Constant step-sizes are essential to ensure that the initial condition is advanced by iterating a single symplectic mapping, which preserves the long-term qualitative features of the flow\cite{sanz-serna_symplectic_1992}.
+
+\subsection{Hybrid Semi-Symplectic Integration Scheme}
+To maintain numerical stability over the decadal timescales required for sustainability analysis, this research utilizes a second-order Strang splitting technique\cite{sanz-serna_symplectic_1992}. The implementation follows a discrete three-phase sequence within each time step $\Delta t$, as illustrated in Figure \ref{fig:strang_flowchart}.
+\begin{enumerate}
+    \item \textbf{Phase 1: First Perturbative Half-Step ($\Phi_P$)}: A velocity correction is applied for an interval of $\Delta t/2$, incorporating instantaneous accelerations from drag and SRP\cite{sanz-serna_symplectic_1992}.
+    \item \textbf{Phase 2: Full Hamiltonian Step ($\Phi_G$)}: The state is propagated for a full step $\Delta t$ using the WHFast symplectic solver, handling geopotential harmonics while preserving the Hamiltonian structure\cite{sanz-serna_symplectic_1992}.
+    \item \textbf{Phase 3: Second Perturbative Half-Step ($\Phi_P$)}: A final half-step update is performed using recomputed dissipative accelerations at the new state.
+\end{enumerate}
+
+\section{Results and Discussion}
+The performance of the evolved framework was evaluated using a massive fragmentation cloud of 50,000 particles, a significant increase over the 20,000-object benchmark established in previous research\cite{puerta-ibarra_advanced_nodate}. 
+
+\subsection{Nodal Precession Verification}
+The current framework compares the numerical nodal precession rate ($\dot{\Omega}$) against first-order secular theory. Numerical experiments demonstrate that the simulated precession rates align with analytical predictions within a relative error of 0.005\% over annual timescales. The high accuracy observed in nodal precession verification is consistent with KAM theory as applied to symplectic mappings\cite{sanz-serna_symplectic_1992}. The symplectic nature of the WHFast core ensures that the orbital planes remain stable under nonlinear perturbations\cite{sanz-serna_symplectic_1992}.
+
+\subsection{Numerical Stability and Energy Conservation}
+Stability is tracked through the relative energy drift $|\Delta E / E_0|$. Results indicate that numerical energy error remains bounded within the $10^{-8}$ to $10^{-7}$ range, proving that the 2nd-order Strang splitting method effectively isolates dissipative effects without inducing artificial secular drift in the orbital energy\cite{sanz-serna_symplectic_1992}.
+
+\section{Conclusion and Future Work}
+This research demonstrates the evolution of a high-fidelity propagator that balances numerical stability with physical realism in LEO. Future work will focus on the integration of Artificial Intelligence (AI) to enhance predictive capabilities, including automated collision prediction and surrogate modeling for space weather.
+
+\section*{Acknowledgments}
+The authors acknowledge the support of the Universidad de Antioquia and the developers of the REBOUND/REBOUNDx libraries\cite{rein_rebound_2012, tamayo_reboundx_2020}.
+
+\bibliographystyle{AAS_publication}
+\bibliography{articles_AIAA_ASC}
+
+\end{document}

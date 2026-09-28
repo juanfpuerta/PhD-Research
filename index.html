@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UdeA - Astrodynamics Hub</title>
+    <style>
+        :root {
+            --udea-green: #006241;
+            --udea-gold: #D4AF37;
+            --charcoal: #2B2B2B;
+            --light-bg: #F8F9FA;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--charcoal);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        header {
+            background-color: var(--udea-green);
+            color: white;
+            width: 100%;
+            padding: 2.5rem 0;
+            text-align: center;
+            border-bottom: 5px solid var(--udea-gold);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        header h1 { margin: 0; font-size: 2.2rem; font-weight: 700; letter-spacing: 0.5px; }
+        header p { margin: 0.5rem 0 0 0; font-size: 1.1rem; color: #E0E0E0; }
+        main {
+            max-width: 800px;
+            width: 90%;
+            margin: 3rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--udea-green);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .card-info h3 { margin: 0 0 0.25rem 0; font-size: 1.25rem; color: var(--udea-green); }
+        .card-info p { margin: 0; font-size: 0.95rem; color: #666; }
+        .btn {
+            background-color: var(--udea-green);
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        .btn:hover { background-color: #004d2c; }
+        .btn-alt { background-color: transparent; color: var(--udea-green); border: 2px solid var(--udea-green); }
+        .btn-alt:hover { background-color: var(--udea-green); color: white; }
+        footer { 
+            margin-top: auto; 
+            padding: 2rem; 
+            font-size: 0.85rem; 
+            color: #888; 
+            text-align: center; 
+            line-height: 1.6;
+        }
+        footer p {
+            margin: 0.2rem 0;
+        }
+        footer a {
+            color: var(--udea-green);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="UdeA+simplificado+Blanco_Smaller.png" alt="UdeA Logo" style="max-height: 100px; margin-bottom: 15px;">
+    <h1>Astrodynamics Course Portal</h1>
+    <p>Universidad de Antioquia — Aerospace Engineering Program</p>
+</header>
+
+    <main>
+        <!-- Slide Decks -->
+        <div class="card">
+            <div class="card-info">
+                <h3>Section 1 Slides</h3>
+                <p>Two-Body Problem and Perturbations (PDF Deck)</p>
+            </div>
+            <a href="./Astrodynamics_Section_1.pdf" class="btn" target="_blank">Open Section 1</a>
+        </div>
+
+        <div class="card">
+            <div class="card-info">
+                <h3>Section 2 Slides</h3>
+                <p>Interplanetary Trajectories and B-Plane Navigation (PDF Deck)</p>
+            </div>
+            <a href="./Astrodynamics_Section_2.pdf" class="btn" target="_blank">Open Section 2</a>
+        </div>
+
+        <div class="card">
+            <div class="card-info">
+                <h3>Workshop RAAN Change</h3>
+                <p>RAAN Change Explanation (PDF Deck)</p>
+            </div>
+            <a href="./RAAN_Change_Explanation.pdf" class="btn" target="_blank">Open Presentation</a>
+        </div>        
+
+        <!-- Interactive Visualizations -->
+        <div class="card">
+            <div class="card-info">
+                <h3>J2 Perturbation</h3>
+                <p>J2 Oblateness and Precession</p>
+            </div>
+            <a href="./j2_perturbation_3d.html" class="btn btn-alt">Launch Widget</a>
+        </div>
+
+        <div class="card">
+            <div class="card-info">
+                <h3>Spherical Harmonics</h3>
+                <p>Visualizing Oblateness Spherical Harmonics</p>
+            </div>
+            <a href="./spherical_harmonics_3d.html" class="btn btn-alt">Launch Widget</a>
+        </div>
+
+        <div class="card">
+            <div class="card-info">
+                <h3>Solar Radiation Pressure</h3>
+                <p>Visualizing SRP</p>
+            </div>
+            <a href="./srp_geo_eccentricity.html" class="btn btn-alt">Launch Widget</a>
+        </div>
+
+        <div class="card">
+            <div class="card-info">
+                <h3>LEO Atmospheric Drag</h3>
+                <p>Visualizing Atmospheric Drag in LEO</p>
+            </div>
+            <a href="./leo_drag_decay_circularization.html" class="btn btn-alt">Launch Widget</a>
+        </div>       
+
+        <div class="card">
+            <div class="card-info">
+                <h3>Drag Coefficient</h3>
+                <p>Visualizing Atmospheric Drag Coefficient in LEO</p>
+            </div>
+            <a href="./drag_Coefficient.html" class="btn btn-alt">Launch Widget</a>
+        </div> 
+
+        <div class="card">
+            <div class="card-info">
+                <h3>RAAN Apex Trap Visualization</h3>
+                <p>Visualizing how the RAAN Changes</p>
+            </div>
+            <a href="./raan_apex_trap_in_motion.html" class="btn btn-alt">Launch Widget</a>
+        </div>          
+
+    </main>
+
+    <footer>
+        <p><strong>Instructor:</strong> Juan F. Puerta | <a href="mailto:juan.puerta@udea.edu.co">juan.puerta@udea.edu.co</a></p>
+        <p>Department of Mechanical and Aerospace Engineering &bull; Semester 2026-2</p>
+    </footer>
+
+</body>
+</html>

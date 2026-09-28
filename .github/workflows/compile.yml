@@ -1,0 +1,65 @@
+name: Compile Beamer Slides & Deploy Hub
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Compile Section 1 Presentation
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: Astrodynamics_Content_1.tex
+          compiler: latexmk
+          args: -pdf -file-line-error -interaction=nonstopmode
+
+      - name: Compile Section 2 Presentation
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: Astrodynamics_Content_2.tex
+          compiler: latexmk
+          args: -pdf -file-line-error -interaction=nonstopmode
+
+      - name: Compile Section 2 Presentation
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: RAAN_Change_Explanation.tex
+          compiler: latexmk
+          args: -pdf -file-line-error -interaction=nonstopmode
+
+      - name: Stage Deployment Directory
+        run: |
+          mkdir -p public
+          mv Astrodynamics_Content_1.pdf public/Astrodynamics_Section_1.pdf
+          mv Astrodynamics_Content_2.pdf public/Astrodynamics_Section_2.pdf
+          mv RAAN_Change_Explanation.pdf public/RAAN_Change_Explanation.pdf
+          cp *.{html,png} public/ 2>/dev/null || true
+
+      - name: Setup Pages Configuration
+        uses: actions/configure-pages@v5
+
+      - name: Upload Production Assets Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './public'
+
+      - name: Deploy Directly to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
