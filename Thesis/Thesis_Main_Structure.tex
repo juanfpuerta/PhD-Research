@@ -6,7 +6,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage[T1]{fontenc}
-\usepackage{charter} % Professional academic font matching UdeA guidelines
+\usepackage{charter} % Academic serif font
+\usepackage{microtype} % Optimizes justification and resolves overfull hbox issues
 \usepackage{geometry}
 \geometry{
     letterpaper,
@@ -14,14 +15,14 @@
     bottom=2.5cm,
     left=3.0cm,
     right=2.5cm,
-    headheight=15pt
+    headheight=28pt % Prevents fancyhdr warning
 }
 \usepackage{amsmath, amssymb, amsfonts, bm}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{tabularx}
-\usepackage{pdfpages} % Required for embedding published paper PDFs
+\usepackage{pdfpages} % Embedding published paper PDFs
 \usepackage{fancyhdr}
 \usepackage{titlesec}
 \usepackage{setspace}
@@ -29,31 +30,41 @@
 \usepackage{url}
 \usepackage[colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=cyan]{hyperref}
 
-% Line spacing (1.5 spacing)
+% Body line spacing (1.5 line spacing for academic theses)
 \onehalfspacing
 
 % Header and Footer setup
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[LE,RO]{\thepage}
-\fancyhead[RE]{\nouppercase{\leftmark}}
-\fancyhead[LO]{\nouppercase{\rightmark}}
+\fancyhead[LE,RO]{\small\thepage}
+\fancyhead[RE]{\small\nouppercase{\leftmark}}
+\fancyhead[LO]{\small\nouppercase{\rightmark}}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0pt}
 
 \fancypagestyle{plain}{
     \fancyhf{}
-    \fancyfoot[C]{\thepage}
+    \fancyfoot[C]{\small\thepage}
     \renewcommand{\headrulewidth}{0pt}
 }
 
-% Chapter Title Formatting
+% Heading Font Sizing & Spacing Configuration
 \titleformat{\chapter}[display]
-  {\normalfont\bfseries\Large}
-  {\filleft\MakeUppercase{\chaptertitlename} \Huge\thechapter}
-  {4ex}
-  {\titlerule\vspace{2ex}\filright}
-  [\vspace{2ex}\titlerule]
+  {\normalfont\bfseries\LARGE}
+  {\filleft\MakeUppercase{\chaptertitlename} \huge\thechapter}
+  {2ex}
+  {\titlerule\vspace{1.5ex}\filright}
+  [\vspace{1.5ex}\titlerule]
+\titlespacing*{\chapter}{0pt}{20pt}{30pt}
+
+\titleformat*{\section}{\large\bfseries}
+\titlespacing*{\section}{0pt}{18pt}{8pt}
+
+\titleformat*{\subsection}{\normalsize\bfseries}
+\titlespacing*{\subsection}{0pt}{12pt}{6pt}
+
+\titleformat*{\paragraph}{\normalsize\bfseries}
+\titlespacing*{\paragraph}{0pt}{10pt}{6pt}
 
 % ==============================================================================
 % DOCUMENT BEGINS
@@ -68,27 +79,29 @@
 \begin{titlepage}
 \begin{center}
     \vspace*{0.5cm}
-    \Huge
-    \textbf{Development of an AI-Enhanced High-Fidelity Hybrid Semi-Symplectic Computational Framework for Massive Space Debris Fragmentation and Orbital Population Dynamics} \\[1.5cm]
+    {\LARGE \bfseries Development of an AI-Enhanced High-Fidelity Hybrid Semi-Symplectic Computational Framework for Massive Space Debris Fragmentation and Orbital Population Dynamics \par}
     
-    \Large
-    \textbf{Juan Francisco Puerta-Ibarra} \\[2.0cm]
+    \vspace{1.8cm}
+    {\Large \textbf{Juan Francisco Puerta-Ibarra} \par}
     
-    \large
-    Thesis presented as a partial requirement for the degree of: \\
-    \textbf{Doctor of Philosophy (Ph.D.) in Engineering} \\[2.0cm]
+    \vspace{2.0cm}
+    {\normalsize Thesis presented as a partial requirement for the degree of: \\
+    \textbf{Doctor of Philosophy (Ph.D.) in Engineering} \par}
     
+    \vspace{2.0cm}
+    {\normalsize
     \textbf{Advisors:} \\
     Nicolás Muñoz-Galeano, Ph.D. (Director) \\
-    Bonnie Prado Pino, Ph.D. (Co-Advisor) \\[2.0cm]
+    Bonnie Prado Pino, Ph.D. (Co-Advisor) \par}
     
-    \large
+    \vfill
+    {\normalsize
     Faculty of Engineering \\
     Department of Mechanical and Aerospace Engineering \\
     Research Group in Efficient Energy Management (GIMEL) \\
     Universidad de Antioquia \\
     Medellín, Colombia \\
-    2026
+    2026 \par}
 \end{center}
 \end{titlepage}
 
@@ -133,66 +146,66 @@ Finally, the research introduces an embedded Artificial Intelligence (AI) ecosys
 \chapter{Introduction}
 \label{ch:introduction}
 
-The emergence of the ``NewSpace'' commercial paradigm has fundamentally transformed access to near-Earth space, accelerating the deployment of commercial mega-constellations, small satellites, and multi-payload launch missions[cite: 4, 5, 7]. While this expansion enables global telecommunications, Earth observation, and commercial services[cite: 4, 7], it has driven Low Earth Orbit (LEO) toward critical operational saturation[cite: 4, 5, 6]. Global tracking registries indicate that more than 35,000 debris objects larger than 10~cm are routinely tracked, surrounded by an untracked population exceeding 500,000 lethal fragments between 1 and 10~cm[cite: 4, 5, 6].
+The emergence of the ``NewSpace'' commercial paradigm has fundamentally transformed access to near-Earth space, accelerating the deployment of commercial mega-constellations, small satellites, and multi-payload launch missions. While this expansion enables global telecommunications, Earth observation, and commercial services, it has driven Low Earth Orbit (LEO) toward critical operational saturation. Global tracking registries indicate that more than 35,000 debris objects larger than 10~cm are routinely tracked, surrounded by an untracked population exceeding 500,000 lethal fragments between 1 and 10~cm.
 
-Catastrophic fragmentation events—arising from propulsion malfunctions, battery decompressions, hypervelocity collisions, and deliberate kinetic anti-satellite (ASAT) engagements—serve as the primary drivers of orbital debris generation[cite: 4, 5, 6]. Landmark incidents such as the 2007 Fengyun-1C fragmentation and the 2009 Iridium-Cosmos hypervelocity collision injected thousands of long-lived fragments across wide orbital bands, illustrating that collision fragments disperse far beyond the altitude of parent bodies[cite: 4, 5, 6]. Without effective tracking and remediation, this population growth increases the risk of triggering the Kessler syndrome, wherein the collision rate outpaces natural atmospheric removal, leading to self-sustaining cascading fragmentation[cite: 4, 6, 7].
+Catastrophic fragmentation events, arising from propulsion malfunctions, battery decompressions, hypervelocity collisions, and deliberate kinetic anti-satellite (ASAT) engagements, serve as the primary drivers of orbital debris generation. Landmark incidents such as the 2007 Fengyun-1C fragmentation and the 2009 Iridium-Cosmos hypervelocity collision injected thousands of long-lived fragments across wide orbital bands, illustrating that collision fragments disperse far beyond the altitude of parent bodies. Without effective tracking and remediation, this population growth increases the risk of triggering the Kessler syndrome, wherein the collision rate outpaces natural atmospheric removal, leading to self-sustaining cascading fragmentation.
 
 \section{Computational and Physical Challenges in LEO Propagation}
 
 Long-term multi-decade forecasting of massive debris clouds is hindered by two computational and physical bottlenecks:
 \begin{enumerate}
-    \item \textbf{Numerical Dissipation and Secular Drift:} Classical high-order explicit numerical schemes (such as Runge-Kutta, Prince-Dormand, and standard Cowell formulations) introduce non-physical truncation errors that accumulate over long orbital arcs[cite: 4, 5, 6]. Over thousands of revolutions, this accumulation produces an artificial secular drift in mechanical energy, leading to false contraction or expansion of modeled orbits[cite: 5, 6].
-    \item \textbf{Computational Scalability and Close-Approach Latency:} Modeling fragment clouds requires propagating $N > 10,000$ to $50,000$ individual bodies[cite: 5, 6]. In classical $N$-body formulations, evaluating close approaches and pairwise conjunctions introduces a quadratic computational complexity ($\mathcal{O}(N^2)$), causing significant processing delays[cite: 5, 6].
+    \item \textbf{Numerical Dissipation and Secular Drift:} Classical high-order explicit numerical schemes (such as Runge-Kutta, Prince-Dormand, and standard Cowell formulations) introduce non-physical truncation errors that accumulate over long orbital arcs. Over thousands of revolutions, this accumulation produces an artificial secular drift in mechanical energy, leading to false contraction or expansion of modeled orbits.
+    \item \textbf{Computational Scalability and Close-Approach Latency:} Modeling fragment clouds requires propagating $N > 10,000$ to $50,000$ individual bodies. In classical $N$-body formulations, evaluating close approaches and pairwise conjunctions introduces a quadratic computational complexity ($\mathcal{O}(N^2)$), causing significant processing delays.
 \end{enumerate}
 
-To ensure bounded energy errors over decadal timescales, symplectic integrators have emerged as a foundational tool[cite: 5, 6, 7]. Grounded in backward error interpretation, symplectic integrators applied to Hamiltonian systems generate trajectories that correspond to a modified Hamiltonian $H_\infty = H + \mathcal{O}(\Delta t^r)$, keeping global mechanical energy errors bounded[cite: 5, 6]. However, Low Earth Orbit represents a non-Hamiltonian environment where non-conservative dissipative perturbations—principally atmospheric drag and Solar Radiation Pressure (SRP)—violate canonical symplectic phase-space preservation[cite: 5, 6, 7].
+To ensure bounded energy errors over decadal timescales, symplectic integrators have emerged as a foundational tool. Grounded in backward error interpretation, symplectic integrators applied to Hamiltonian systems generate trajectories that correspond to a modified Hamiltonian $H_\infty = H + \mathcal{O}(\Delta t^r)$, keeping global mechanical energy errors bounded. However, Low Earth Orbit represents a non-Hamiltonian environment where non-conservative dissipative perturbations, principally atmospheric drag and Solar Radiation Pressure (SRP), violate canonical symplectic phase-space preservation.
 
-To address these limitations, this doctoral research establishes a three-stage computational framework[cite: 5, 6, 7]. The following subsections outline the identified Knowledge Gaps and the corresponding scientific Contributions developed in this thesis[cite: 2, 5, 6, 7].
+To address these limitations, this doctoral research establishes a three-stage computational framework. The following subsections outline the identified Knowledge Gaps and the corresponding scientific Contributions developed in this thesis.
 
 \section{Knowledge Gaps and Scientific Contributions}
 
 \paragraph{Knowledge Gap 1: Scalability and Truncation Errors in Massive Debris Integrations.}
-Classical mission planning propagators rely on explicit numerical integration, incurring high computational runtimes and accumulated secular energy drift when simulating large-scale debris populations ($N \ge 20,000$) over extended operational windows[cite: 5, 6, 7].
+Classical mission planning propagators rely on explicit numerical integration, incurring high computational runtimes and accumulated secular energy drift when simulating large-scale debris populations ($N \ge 20,000$) over extended operational windows.
 
 \paragraph{Contribution 1: Validated Symplectic Geopotential Baseline (Chapter~\ref{ch:paper1}).}
-To resolve the trade-off between energy stability and computational speed, the first stage of this research—published in the \textit{AAS/AIAA Astrodynamics Specialist Conference} (AAS 25-787)[cite: 6, 7]—formulates and validates a symplectic N-body framework using the WHFast solver from the REBOUND core[cite: 6, 7]. The framework successfully integrates Earth geopotential zonal harmonics ($J_2, J_4$) for a procedurally generated population of 20,000 LEO objects. Benchmarking against NASA's General Mission Analysis Tool (GMAT) demonstrated sub-kilometer positional consistency over 24-hour periods, bounded relative energy errors within $|\Delta E/E_0| \in [10^{-8}, 10^{-7}]$, and established a predictable power-law computational scalability exponent of 1.60[cite: 6, 7].
+To resolve the trade-off between energy stability and computational speed, the first stage of this research, published in the \textit{AAS/AIAA Astrodynamics Specialist Conference} (AAS 25-787), formulates and validates a symplectic N-body framework using the WHFast solver from the REBOUND core. The framework successfully integrates Earth geopotential zonal harmonics ($J_2, J_4$) for a procedurally generated population of 20,000 LEO objects. Benchmarking against NASA's General Mission Analysis Tool (GMAT) demonstrated sub-kilometer positional consistency over 24-hour periods, bounded relative energy errors within $|\Delta E/E_0| \in [10^{-8}, 10^{-7}]$, and established a predictable power-law computational scalability exponent of 1.60.
 
 \paragraph{Knowledge Gap 2: Non-Conservative Dissipative Breakdown of Symplectic Invariants.}
-Symplectic integrators require Hamiltonian energy conservation, making them inherently unsuited for direct simulation of dissipative atmospheric drag and Solar Radiation Pressure without violating underlying geometric invariants[cite: 5, 6, 7].
+Symplectic integrators require Hamiltonian energy conservation, making them inherently unsuited for direct simulation of dissipative atmospheric drag and Solar Radiation Pressure without violating underlying geometric invariants.
 
 \paragraph{Contribution 2: Second-Order Strang Splitting Semi-Symplectic Architecture (Chapter~\ref{ch:paper2}).}
-To incorporate non-conservative forces into symplectic propagation, the second stage implements a symmetric second-order Strang operator splitting sequence[cite: 5, 6]. The total evolution operator $\Phi(\Delta t)$ decomposes into a central Hamiltonian gravitational flow ($\Phi_G$) handled by the symplectic engine, and half-step dissipative velocity kicks ($\Phi_P(\Delta t/2)$) incorporating piecewise-exponential atmospheric drag and SRP[cite: 5, 6]. Scaled to 50,000 fragments, the architecture verified secular nodal precession within 0.005\% of analytical theory, bounded energy error across annual cycles, and captured the physical ``orbital sorting'' effect where fragments diverge dynamically according to their area-to-mass ratio ($A/m$)[cite: 5, 6].
+To incorporate non-conservative forces into symplectic propagation, the second stage implements a symmetric second-order Strang operator splitting sequence. The total evolution operator $\Phi(\Delta t)$ decomposes into a central Hamiltonian gravitational flow ($\Phi_G$) handled by the symplectic engine, and half-step dissipative velocity kicks ($\Phi_P(\Delta t/2)$) incorporating piecewise-exponential atmospheric drag and SRP. Scaled to 50,000 fragments, the architecture verified secular nodal precession within 0.005\% of analytical theory, bounded energy error across annual cycles, and captured the physical ``orbital sorting'' effect where fragments diverge dynamically according to their area-to-mass ratio ($A/m$).
 
 \paragraph{Knowledge Gap 3: Conjunction Screening Latency and Inverse Event Reconstruction.}
-Evaluating close approaches across $50,000$ dispersing fragments suffers from quadratic $\mathcal{O}(N^2)$ distance-search bottlenecks[cite: 5, 6]. Furthermore, solving the inverse problem of identifying historical fragmentation coordinates from sparse tracking observations is hindered by file I/O latency when running iterative propagation routines[cite: 5, 6].
+Evaluating close approaches across $50,000$ dispersing fragments suffers from quadratic $\mathcal{O}(N^2)$ distance-search bottlenecks. Furthermore, solving the inverse problem of identifying historical fragmentation coordinates from sparse tracking observations is hindered by file I/O latency when running iterative propagation routines.
 
-\paragraph{Contribution 3: Embedded Multi-Tier AI Ecosystem for Real-Time Conjunction Assessment and Inverse Targeting (Chapter~\ref{ch:paper3}).}
-To eliminate computational bottlenecks and operationalize the framework, the third stage—published in the \textit{AAS/AIAA Astrodynamics Specialist Conference} (AAS 26-993)—embeds an artificial intelligence architecture directly into the symplectic loop[cite: 6]:
+\paragraph{Contribution 3: Embedded Multi-Tier AI Ecosystem for Conjunction Assessment and Inverse Targeting (Chapter~\ref{ch:paper3}).}
+To eliminate computational bottlenecks and operationalize the framework, the third stage, published in the \textit{AAS/AIAA Astrodynamics Specialist Conference} (AAS 26-993), embeds an artificial intelligence architecture directly into the symplectic loop:
 \begin{enumerate}
-    \item A \textbf{Physics-Informed Neural Network (PINN)} serves as a continuously differentiable ($\mathcal{C}^\infty$) thermospheric density surrogate obeying hydrostatic equilibrium, eliminating numerical noise caused by piecewise table interpolations[cite: 6].
-    \item A \textbf{Spatial $K$-Dimensional Tree (KD-Tree)} partitions orbital space to isolate proximate pairs, reducing conjunction search complexity to $\mathcal{O}(N \log N)$[cite: 6]. An \textbf{LSTM sequence classifier} evaluates relative kinematic arcs, achieving 100\% classification accuracy across 702 high-risk conjunction trajectories[cite: 6].
-    \item An \textbf{Inverse Kinematic Targeting Agent} formulates breakup reconstruction as a Markov Decision Process (MDP)[cite: 6]. Linking the C-compiled symplectic engine into Python via a \texttt{ctypes} shared-memory bridge allows a Proximal Policy Optimization (PPO) agent to execute 32,768-step rollouts directly in RAM, achieving 37 frames per second across 16 CPU cores and reconstructing historical breakup coordinates[cite: 6].
+    \item A \textbf{Physics-Informed Neural Network (PINN)} serves as a continuously differentiable ($\mathcal{C}^\infty$) thermospheric density surrogate obeying hydrostatic equilibrium, eliminating numerical noise caused by piecewise table interpolations.
+    \item A \textbf{Spatial $K$-Dimensional Tree (KD-Tree)} partitions orbital space to isolate proximate pairs, reducing conjunction search complexity to $\mathcal{O}(N \log N)$. An \textbf{LSTM sequence classifier} evaluates relative kinematic arcs, achieving 100\% classification accuracy across 702 high-risk conjunction trajectories.
+    \item An \textbf{Inverse Kinematic Targeting Agent} formulates breakup reconstruction as a Markov Decision Process (MDP). Linking the C-compiled symplectic engine into Python via a \texttt{ctypes} shared-memory bridge allows a Proximal Policy Optimization (PPO) agent to execute 32,768-step rollouts directly in RAM, achieving 37 frames per second across 16 CPU cores and reconstructing historical breakup coordinates.
 \end{enumerate}
 
 \section{Research Objectives}
 
 \subsection{General Objective}
-To develop, validate, and optimize an AI-enhanced high-fidelity hybrid semi-symplectic computational framework capable of modeling massive space debris fragmentation and long-term population dynamics within non-conservative orbital environments to support space traffic management and space sustainability operations[cite: 4, 5].
+To develop, validate, and optimize an AI-enhanced high-fidelity hybrid semi-symplectic computational framework capable of modeling massive space debris fragmentation and long-term population dynamics within non-conservative orbital environments to support space traffic management and space sustainability operations.
 
 \subsection{Specific Objectives and Fulfillment}
 \begin{itemize}
-    \item \textbf{Specific Objective 1:} Develop and mathematically verify a scalable symplectic N-body propagation core capable of modeling Earth's conservative geopotential field for massive debris clouds ($N \ge 20,000$) with bounded numerical energy drift[cite: 5, 7]. \\
-    \textit{Fulfillment:} Addressed in Chapter~\ref{ch:paper1} and published in \textit{AAS 25-787}[cite: 6, 7].
+    \item \textbf{Specific Objective 1:} Develop and mathematically verify a scalable symplectic N-body propagation core capable of modeling Earth's conservative geopotential field for massive debris clouds ($N \ge 20,000$) with bounded numerical energy drift. \\
+    \textit{Fulfillment:} Addressed in Chapter~\ref{ch:paper1} and published in \textit{AAS 25-787}.
     
-    \item \textbf{Specific Objective 2:} Formulate and implement a symmetric second-order Strang operator splitting integration scheme that couples conservative Hamiltonian gravity with non-conservative perturbations (piecewise-exponential atmospheric drag and Solar Radiation Pressure) across populations of 50,000 fragments[cite: 5, 6]. \\
-    \textit{Fulfillment:} Addressed in Chapter~\ref{ch:paper2}[cite: 5, 6].
+    \item \textbf{Specific Objective 2:} Formulate and implement a symmetric second-order Strang operator splitting integration scheme that couples conservative Hamiltonian gravity with non-conservative perturbations (piecewise-exponential atmospheric drag and Solar Radiation Pressure) across populations of 50,000 fragments. \\
+    \textit{Fulfillment:} Addressed in Chapter~\ref{ch:paper2}.
     
-    \item \textbf{Specific Objective 3:} Integrate embedded deep learning and reinforcement learning models to resolve computational latencies in thermospheric density evaluation, close-approach conjunction mapping, and inverse fragmentation event reconstruction[cite: 5, 6]. \\
-    \textit{Fulfillment:} Addressed in Chapter~\ref{ch:paper3} and published in \textit{AAS 26-993}[cite: 6].
+    \item \textbf{Specific Objective 3:} Integrate embedded deep learning and reinforcement learning models to resolve computational latencies in thermospheric density evaluation, close-approach conjunction mapping, and inverse fragmentation event reconstruction. \\
+    \textit{Fulfillment:} Addressed in Chapter~\ref{ch:paper3} and published in \textit{AAS 26-993}.
 \end{itemize}
 
 \section{Thesis Organization}
-The remainder of this compendium thesis is organized as follows: Chapter~\ref{ch:paper1} presents the baseline symplectic N-body framework and its validation against NASA's GMAT[cite: 6, 7]; Chapter~\ref{ch:paper2} develops the second-order Strang splitting scheme for non-conservative dissipative forces[cite: 5, 6]; Chapter~\ref{ch:paper3} integrates the embedded PINN, KD-Tree/LSTM, and PPO reinforcement learning architectures[cite: 6]; and Chapter~\ref{ch:conclusions} presents the general conclusions and directions for future research[cite: 2, 6].
+The remainder of this compendium thesis is organized as follows: Chapter~\ref{ch:paper1} presents the baseline symplectic N-body framework and its validation against NASA's GMAT; Chapter~\ref{ch:paper2} develops the second-order Strang splitting scheme for non-conservative dissipative forces; Chapter~\ref{ch:paper3} integrates the embedded PINN, KD-Tree/LSTM, and PPO reinforcement learning architectures; and Chapter~\ref{ch:conclusions} presents the general conclusions and directions for future research.
 
 \cleardoublepage
 
@@ -203,16 +216,14 @@ The remainder of this compendium thesis is organized as follows: Chapter~\ref{ch
 \label{ch:paper1}
 
 \section*{Chapter Overview and Contextualization}
-This chapter addresses the first specific objective of this doctoral research by developing and validating a structure-preserving N-body propagation framework for high-density space debris environments[cite: 5, 7]. This chapter synthesizes and presents the research published in the \textit{AAS/AIAA Astrodynamics Specialist Conference} (Paper AAS 25-787)[cite: 6, 7].
+This chapter addresses the first specific objective of this doctoral research by developing and validating a structure-preserving N-body propagation framework for high-density space debris environments. This chapter synthesizes and presents the research published in the \textit{AAS/AIAA Astrodynamics Specialist Conference} (Paper AAS 25-787).
 
-Predicting the evolutionary trajectory of fragmentation clouds requires maintaining numerical stability across millions of integration steps[cite: 6, 7]. Traditional explicit numerical propagators (e.g., standard Runge-Kutta or Cowell formulations) suffer from the accumulation of truncation errors, which manifest as non-physical secular drifts in mechanical energy[cite: 5, 6, 7]. This chapter evaluates the application of symplectic integration schemes—specifically the WHFast symplectic N-body solver from the REBOUND library—to model the motion of 20,000 autonomous fragments under Earth's central gravity and zonal geopotential harmonics ($J_2$ and $J_4$)[cite: 6, 7].
+Predicting the evolutionary trajectory of fragmentation clouds requires maintaining numerical stability across millions of integration steps. Traditional explicit numerical propagators (e.g., standard Runge-Kutta or Cowell formulations) suffer from the accumulation of truncation errors, which manifest as non-physical secular drifts in mechanical energy. This chapter evaluates the application of symplectic integration schemes---specifically the WHFast symplectic N-body solver from the REBOUND library---to model the motion of 20,000 autonomous fragments under Earth's central gravity and zonal geopotential harmonics ($J_2$ and $J_4$).
 
-The primary contribution of this work lies in proving that symplectic N-body formulations maintain bounded relative energy errors ($|\Delta E/E_0| \le 10^{-7}$) over extended propagation windows while delivering sub-kilometer orbital element consistency when benchmarked against NASA's General Mission Analysis Tool (GMAT)[cite: 6, 7]. Furthermore, computational scalability tests demonstrated that the architecture follows a predictable power-law scaling exponent of 1.60, establishing the numerical baseline required for the subsequent integration of dissipative environmental perturbations[cite: 6, 7].
+The primary contribution of this work lies in proving that symplectic N-body formulations maintain bounded relative energy errors ($|\Delta E/E_0| \le 10^{-7}$) over extended propagation windows while delivering sub-kilometer orbital element consistency when benchmarked against NASA's General Mission Analysis Tool (GMAT). Furthermore, computational scalability tests demonstrated that the architecture follows a predictable power-law scaling exponent of 1.60, establishing the numerical baseline required for the subsequent integration of dissipative environmental perturbations.
 
 \newpage
-% Inclusion of the published conference paper PDF
-% Ensure the file 'papers/AAS_25_787.pdf' is located in your Overleaf project directory
-%\includepdf[pages=-, scale=0.95, pagecommand={\thispagestyle{plain}}]{papers/AAS_25_787.pdf}
+% \includepdf[pages=-, scale=0.95, pagecommand={\thispagestyle{plain}}]{papers/AAS_25_787.pdf}
 
 \cleardoublepage
 
@@ -223,14 +234,13 @@ The primary contribution of this work lies in proving that symplectic N-body for
 \label{ch:paper2}
 
 \section*{Chapter Overview and Contextualization}
-This chapter addresses the second specific objective of this thesis by extending the conservative symplectic core developed in Chapter~\ref{ch:paper1} to non-Hamiltonian orbital environments[cite: 5, 6]. It synthesizes the formulation and validation of the second-order symmetric Strang operator splitting methodology designed to incorporate non-conservative perturbations[cite: 5, 6].
+This chapter addresses the second specific objective of this thesis by extending the conservative symplectic core developed in Chapter~\ref{ch:paper1} to non-Hamiltonian orbital environments. It synthesizes the formulation and validation of the second-order symmetric Strang operator splitting methodology designed to incorporate non-conservative perturbations.
 
-While symplectic integrators preserve phase-space volume and energy invariants in conservative systems, Low Earth Orbit (LEO) is governed by dissipative forces—primarily atmospheric drag and Solar Radiation Pressure (SRP)—that violate Hamiltonian mechanics[cite: 5, 6, 7]. Classical techniques resolve this by abandoning symplectic structures in favor of explicit schemes, reintroducing artificial energy growth[cite: 5, 6]. This study resolves the conflict by decoupling the equations of motion via operator splitting[cite: 5, 6].
+While symplectic integrators preserve phase-space volume and energy invariants in conservative systems, Low Earth Orbit (LEO) is governed by dissipative forces---primarily atmospheric drag and Solar Radiation Pressure (SRP)---that violate Hamiltonian mechanics. Classical techniques resolve this by abandoning symplectic structures in favor of explicit schemes, reintroducing artificial energy growth. This study resolves the conflict by decoupling the equations of motion via operator splitting.
 
-Under a constant step size ($\Delta t = 10$~s), each integration step executes as a symmetric three-phase sequence: a half-step velocity kick $\Phi_P(\Delta t/2)$ evaluating dissipative drag and SRP accelerations, a full-step symplectic drift $\Phi_G(\Delta t)$ propagating geopotential dynamics via WHFast, and a final half-step kick $\Phi_P(\Delta t/2)$[cite: 5, 6]. The framework was evaluated across a population of 50,000 fragments generated via NASA's Standard Breakup Model (SBM)[cite: 4, 5, 6]. The results confirmed that secular nodal precession matched first-order analytical perturbation theory within 0.005\%, while successfully modeling the ``orbital sorting'' phenomenon, wherein fragments with higher area-to-mass ratios ($A/m > 0.05~\text{m}^2/\text{kg}$) experience accelerated orbital decay[cite: 5, 6].
+Under a constant step size ($\Delta t = 10$~s), each integration step executes as a symmetric three-phase sequence: a half-step velocity kick $\Phi_P(\Delta t/2)$ evaluating dissipative drag and SRP accelerations, a full-step symplectic drift $\Phi_G(\Delta t)$ propagating geopotential dynamics via WHFast, and a final half-step kick $\Phi_P(\Delta t/2)$. The framework was evaluated across a population of 50,000 fragments generated via NASA's Standard Breakup Model (SBM). The results confirmed that secular nodal precession matched first-order analytical perturbation theory within 0.005\%, while successfully modeling the ``orbital sorting'' phenomenon, wherein fragments with higher area-to-mass ratios ($A/m > 0.05~\text{m}^2/\text{kg}$) experience accelerated orbital decay.
 
 \newpage
-% Inclusion of Paper 2 PDF
 % \includepdf[pages=-, scale=0.95, pagecommand={\thispagestyle{plain}}]{papers/Paper_Strang_Splitting.pdf}
 
 \cleardoublepage
@@ -242,20 +252,19 @@ Under a constant step size ($\Delta t = 10$~s), each integration step executes a
 \label{ch:paper3}
 
 \section*{Chapter Overview and Contextualization}
-This chapter addresses the third specific objective of the doctoral research by embedding a multi-tier Artificial Intelligence (AI) architecture directly within the semi-symplectic propagation pipeline[cite: 5, 6]. This work synthesizes the methodology and findings published in the \textit{AAS/AIAA Astrodynamics Specialist Conference} (Paper AAS 26-993)[cite: 6].
+This chapter addresses the third specific objective of the doctoral research by embedding a multi-tier Artificial Intelligence (AI) architecture directly within the semi-symplectic propagation pipeline. This work synthesizes the methodology and findings published in the \textit{AAS/AIAA Astrodynamics Specialist Conference} (Paper AAS 26-993).
 
-Although the hybrid Strang splitting integrator maintains numerical stability across 50,000 fragments, executing high-density operational tasks—such as pairwise conjunction screening and iterative inverse fragmentation targeting—introduces severe computational latency[cite: 5, 6]. Evaluating atmospheric drag using piecewise-exponential lookups introduces gradient discontinuities that perturb the numerical core, while all-on-all conjunction screening scales quadratically ($\mathcal{O}(N^2)$)[cite: 5, 6]. Furthermore, solving the inverse problem of locating historical breakup coordinates is constrained by file I/O bottlenecks[cite: 6].
+Although the hybrid Strang splitting integrator maintains numerical stability across 50,000 fragments, executing high-density operational tasks---such as pairwise conjunction screening and iterative inverse fragmentation targeting---introduces severe computational latency. Evaluating atmospheric drag using piecewise-exponential lookups introduces gradient discontinuities that perturb the numerical core, while all-on-all conjunction screening scales quadratically ($\mathcal{O}(N^2)$). Furthermore, solving the inverse problem of locating historical breakup coordinates is constrained by file I/O bottlenecks.
 
-To resolve these challenges, this chapter establishes a three-phase AI ecosystem[cite: 6]:
+To resolve these challenges, this chapter establishes a three-phase AI ecosystem:
 \begin{enumerate}
-    \item A \textbf{PINN Thermospheric Surrogate} regularized by the differential hydrostatic equilibrium equation to deliver smooth, continuously differentiable density values across LEO[cite: 6].
-    \item A \textbf{Spatial KD-Tree} that reduces pairwise distance searches to $\mathcal{O}(N \log N)$, combined with an \textbf{LSTM Sequence Classifier} that accurately identifies high-risk kinematic conjunctions amidst extreme class imbalance[cite: 6].
-    \item A \textbf{PPO Reinforcement Learning Agent} connected to the C-compiled symplectic engine via a \texttt{ctypes} shared-memory pointer interface[cite: 6]. Operating entirely within hardware RAM across 16 CPU cores, the agent generates 37 FPS, optimizing historical event coordinates without disk serialization overhead[cite: 6].
+    \item A \textbf{PINN Thermospheric Surrogate} regularized by the differential hydrostatic equilibrium equation to deliver smooth, continuously differentiable density values across LEO.
+    \item A \textbf{Spatial KD-Tree} that reduces pairwise distance searches to $\mathcal{O}(N \log N)$, combined with an \textbf{LSTM Sequence Classifier} that accurately identifies high-risk kinematic conjunctions amidst extreme class imbalance.
+    \item A \textbf{PPO Reinforcement Learning Agent} connected to the C-compiled symplectic engine via a \texttt{ctypes} shared-memory pointer interface. Operating entirely within hardware RAM across 16 CPU cores, the agent generates 37 FPS, optimizing historical event coordinates without disk serialization overhead.
 \end{enumerate}
-Computational benchmarks confirmed that the integrated AI-symplectic framework preserves the global $\mathcal{O}(N^{1.60})$ power-law scalability curve, providing a scalable computational engine for real-time space traffic coordination[cite: 6].
+Computational benchmarks confirmed that the integrated AI-symplectic framework preserves the global $\mathcal{O}(N^{1.60})$ power-law scalability curve, providing a scalable computational engine for real-time space traffic coordination.
 
 \newpage
-% Inclusion of Paper 3 PDF (AAS 26-993)
 % \includepdf[pages=-, scale=0.95, pagecommand={\thispagestyle{plain}}]{papers/AAS_26_993.pdf}
 
 \cleardoublepage
@@ -267,56 +276,56 @@ Computational benchmarks confirmed that the integrated AI-symplectic framework p
 \label{ch:conclusions}
 
 \section{General Conclusions}
-This doctoral dissertation successfully fulfilled its general objective by designing, implementing, and validating an AI-enhanced, high-fidelity hybrid semi-symplectic computational framework for simulating massive space debris fragmentation and orbital population dynamics in Low Earth Orbit[cite: 4, 5, 6]. By bridging structure-preserving symplectic numerical integrators with advanced deep learning and reinforcement learning models, the research resolves the trade-off between long-term physical fidelity and computational scalability[cite: 5, 6, 7].
+This doctoral dissertation successfully fulfilled its general objective by designing, implementing, and validating an AI-enhanced, high-fidelity hybrid semi-symplectic computational framework for simulating massive space debris fragmentation and orbital population dynamics in Low Earth Orbit. By bridging structure-preserving symplectic numerical integrators with advanced deep learning and reinforcement learning models, the research resolves the trade-off between long-term physical fidelity and computational scalability.
 
-The fulfillment of the first specific objective established that symplectic N-body architectures natively eliminate secular mechanical energy drift in orbital mechanics[cite: 6, 7]. Validated in Chapter~\ref{ch:paper1}, the WHFast implementation preserved energy error bounds within $\vert{}\Delta E/E_0\vert{} \le 10^{-7}$ for 20,000 fragments under Earth's $J_2/J_4$ geopotential field, achieving sub-kilometer positional agreement with NASA's GMAT and demonstrating an empirical power-law scalability exponent of 1.60[cite: 6, 7].
+The fulfillment of the first specific objective established that symplectic N-body architectures natively eliminate secular mechanical energy drift in orbital mechanics. Validated in Chapter~\ref{ch:paper1}, the WHFast implementation preserved energy error bounds within $\vert{}\Delta E/E_0\vert{} \le 10^{-7}$ for 20,000 fragments under Earth's $J_2/J_4$ geopotential field, achieving sub-kilometer positional agreement with NASA's GMAT and demonstrating an empirical power-law scalability exponent of 1.60.
 
-The second specific objective demonstrated that dissipative environmental forces can be integrated into symplectic algorithms without destroying their underlying geometric properties[cite: 5, 6]. As demonstrated in Chapter~\ref{ch:paper2}, the symmetric second-order Strang operator splitting sequence successfully decoupled conservative Hamiltonian gravity from non-conservative atmospheric drag and Solar Radiation Pressure[cite: 5, 6]. The model accurately reproduced secular nodal precession within 0.005\% of analytical theory across 50,000 fragments and captured the physical orbital sorting effect driven by variations in area-to-mass ratios[cite: 5, 6].
+The second specific objective demonstrated that dissipative environmental forces can be integrated into symplectic algorithms without destroying their underlying geometric properties. As demonstrated in Chapter~\ref{ch:paper2}, the symmetric second-order Strang operator splitting sequence successfully decoupled conservative Hamiltonian gravity from non-conservative atmospheric drag and Solar Radiation Pressure. The model accurately reproduced secular nodal precession within 0.005\% of analytical theory across 50,000 fragments and captured the physical orbital sorting effect driven by variations in area-to-mass ratios.
 
-Finally, the third specific objective demonstrated that localized artificial intelligence architectures can eliminate computational latency bottlenecks in space traffic management[cite: 5, 6]. As detailed in Chapter~\ref{ch:paper3}, embedding a Physics-Informed Neural Network (PINN) produced a $\mathcal{C}^\infty$-differentiable thermospheric density surrogate that eliminated table lookup discontinuities[cite: 6]. Concurrently, spatial KD-Tree partitioning reduced conjunction screening complexity from $\mathcal{O}(N^2)$ to $\mathcal{O}(N \log N)$, enabling downstream LSTM sequence models to classify collision trajectories with high fidelity[cite: 6]. Furthermore, coupling the C-compiled numerical engine with a Python PPO agent via a shared-memory \texttt{ctypes} interface enabled inverse fragmentation event reconstruction entirely within hardware RAM at 37 FPS[cite: 6].
+Finally, the third specific objective demonstrated that localized artificial intelligence architectures can eliminate computational latency bottlenecks in space traffic management. As detailed in Chapter~\ref{ch:paper3}, embedding a Physics-Informed Neural Network (PINN) produced a $\mathcal{C}^\infty$-differentiable thermospheric density surrogate that eliminated table lookup discontinuities. Concurrently, spatial KD-Tree partitioning reduced conjunction screening complexity from $\mathcal{O}(N^2)$ to $\mathcal{O}(N \log N)$, enabling downstream LSTM sequence models to classify collision trajectories with high fidelity. Furthermore, coupling the C-compiled numerical engine with a Python PPO agent via a shared-memory \texttt{ctypes} interface enabled inverse fragmentation event reconstruction entirely within hardware RAM at 37 FPS.
 
-In summary, the transition from pure symplectic N-body propagators to hybrid Strang-split formulations, culminating in an integrated AI-astrodynamics ecosystem, establishes a scalable, physically consistent computational tool for orbital debris forecasting and space traffic management[cite: 5, 6, 7].
+In summary, the transition from pure symplectic N-body propagators to hybrid Strang-split formulations, culminating in an integrated AI-astrodynamics ecosystem, establishes a scalable, physically consistent computational tool for orbital debris forecasting and space traffic management.
 
 \section{Specific Conclusions}
 
 \paragraph{Performance of Symplectic N-Body Propagators (Objective 1):}
 \begin{itemize}
-    \item Symplectic integrators effectively prevent the accumulation of secular energy drift inherent to classical explicit numerical methods (such as Runge-Kutta and Cowell schemes) when modeling orbital mechanics over long durations[cite: 5, 6, 7].
-    \item The WHFast symplectic solver maintained relative energy errors within $\vert{}\Delta E/E_0\vert{} \in [10^{-8}, 10^{-7}]$ across 24-hour simulations of 20,000 LEO fragments[cite: 6, 7].
-    \item Cross-validation against NASA's General Mission Analysis Tool (GMAT) demonstrated sub-kilometer positional agreement while maintaining an empirical computational scaling exponent of 1.60[cite: 6, 7].
+    \item Symplectic integrators effectively prevent the accumulation of secular energy drift inherent to classical explicit numerical methods (such as Runge-Kutta and Cowell schemes) when modeling orbital mechanics over long durations.
+    \item The WHFast symplectic solver maintained relative energy errors within $\vert{}\Delta E/E_0\vert{} \in [10^{-8}, 10^{-7}]$ across 24-hour simulations of 20,000 LEO fragments.
+    \item Cross-validation against NASA's General Mission Analysis Tool (GMAT) demonstrated sub-kilometer positional agreement while maintaining an empirical computational scaling exponent of 1.60.
 \end{itemize}
 
 \paragraph{High-Fidelity Strang Operator Splitting (Objective 2):}
 \begin{itemize}
-    \item Second-order Strang splitting ($\Phi_P(\Delta t/2) \circ \Phi_G(\Delta t) \circ \Phi_P(\Delta t/2)$) successfully isolates non-conservative dissipative forces into symmetric half-step kicks, preventing numerical dissipation from degrading the primary symplectic gravitational flow[cite: 5, 6].
-    \item Constant step sizes ($\Delta t = 10$~s) ensure that the numerical flow advances via a single symplectic mapping, avoiding the quadratic error growth associated with variable-step symplectic schemes[cite: 5, 6].
-    \item The hybrid model reproduced secular nodal precession within 0.005\% of analytical theory and simulated physical orbital sorting across 50,000 fragments with varying area-to-mass ratios ($A/m$)[cite: 5, 6].
+    \item Second-order Strang splitting ($\Phi_P(\Delta t/2) \circ \Phi_G(\Delta t) \circ \Phi_P(\Delta t/2)$) successfully isolates non-conservative dissipative forces into symmetric half-step kicks, preventing numerical dissipation from degrading the primary symplectic gravitational flow.
+    \item Constant step sizes ($\Delta t = 10$~s) ensure that the numerical flow advances via a single symplectic mapping, avoiding the quadratic error growth associated with variable-step symplectic schemes.
+    \item The hybrid model reproduced secular nodal precession within 0.005\% of analytical theory and simulated physical orbital sorting across 50,000 fragments with varying area-to-mass ratios ($A/m$).
 \end{itemize}
 
 \paragraph{Embedded Artificial Intelligence Integration (Objective 3):}
 \begin{itemize}
-    \item Physics-Informed Neural Networks regularized by the differential hydrostatic equilibrium equation provide continuous, $\mathcal{C}^\infty$-differentiable atmospheric density fields, eliminating numerical gradient jumps typical of piecewise lookups[cite: 6].
-    \item Spatial KD-Tree domain decomposition reduces conjunction screening complexity from $\mathcal{O}(N^2)$ to $\mathcal{O}(N \log N)$, enabling LSTM sequence classifiers to evaluate kinematic arcs with high recall amidst severe class imbalance[cite: 6].
-    \item Establishing a direct \texttt{ctypes} foreign function interface between C and Python eliminates disk I/O bottlenecks, enabling parallel PPO reinforcement learning rollouts in RAM at 37 FPS across 16 CPU cores for autonomous breakup reconstruction[cite: 6].
-    \item Benchmarking confirmed that the integrated AI-symplectic framework preserves the global $\mathcal{O}(N^{1.60})$ power-law scalability curve[cite: 6].
+    \item Physics-Informed Neural Networks regularized by the differential hydrostatic equilibrium equation provide continuous, $\mathcal{C}^\infty$-differentiable atmospheric density fields, eliminating numerical gradient jumps typical of piecewise lookups.
+    \item Spatial KD-Tree domain decomposition reduces conjunction screening complexity from $\mathcal{O}(N^2)$ to $\mathcal{O}(N \log N)$, enabling LSTM sequence classifiers to evaluate kinematic arcs with high recall amidst severe class imbalance.
+    \item Establishing a direct \texttt{ctypes} foreign function interface between C and Python eliminates disk I/O bottlenecks, enabling parallel PPO reinforcement learning rollouts in RAM at 37 FPS across 16 CPU cores for autonomous breakup reconstruction.
+    \item Benchmarking confirmed that the integrated AI-symplectic framework preserves the global $\mathcal{O}(N^{1.60})$ power-law scalability curve.
 \end{itemize}
 
 \section{Future Work}
-Based on the findings and computational trade-offs identified throughout this research, several directions are proposed for future investigation[cite: 6]:
+Based on the findings and computational trade-offs identified throughout this research, several directions are proposed for future investigation:
 \begin{itemize}
-    \item \textbf{Distributed HPC Cluster Scaling:} Transition the current shared-memory OpenMP architecture to distributed multi-node GPU clusters (utilizing MPI and CUDA) to scale PPO optimization horizons beyond $10^7$ timesteps, driving inverse tracking residuals down to sub-kilometer accuracy[cite: 6].
-    \item \textbf{Cislunar and Multi-Body Gravity Expansion:} Extend the symplectic gravitational core to incorporate multi-body third-body perturbations (Sun and Moon) and non-spherical lunar gravity fields, utilizing spatial-temporal Graph Neural Networks (GNNs) or Attention Transformers to assess cislunar fragmentation dynamics[cite: 6].
-    \item \textbf{Autonomous Time-Reversible Inversion:} Exploit the geometric time-reversibility of symplectic maps by executing negative time-step integrations ($\Delta t < 0$), allowing reinforcement learning agents to trace dispersed debris clouds backward through perturbed thermospheric regimes to identify parent satellite breakups autonomously[cite: 6].
-    \item \textbf{Hardware-in-the-Loop Validation:} Implement the trained PINN surrogates and KD-Tree/LSTM models on embedded radiation-hardened spacecraft processors to evaluate onboard autonomous collision avoidance and decentralized space traffic coordination[cite: 2, 6].
+    \item \textbf{Distributed HPC Cluster Scaling:} Transition the current shared-memory OpenMP architecture to distributed multi-node GPU clusters (utilizing MPI and CUDA) to scale PPO optimization horizons beyond $10^7$ timesteps, driving inverse tracking residuals down to sub-kilometer accuracy.
+    \item \textbf{Cislunar and Multi-Body Gravity Expansion:} Extend the symplectic gravitational core to incorporate multi-body third-body perturbations (Sun and Moon) and non-spherical lunar gravity fields, utilizing spatial-temporal Graph Neural Networks (GNNs) or Attention Transformers to assess cislunar fragmentation dynamics.
+    \item \textbf{Autonomous Time-Reversible Inversion:} Exploit the geometric time-reversibility of symplectic maps by executing negative time-step integrations ($\Delta t < 0$), allowing reinforcement learning agents to trace dispersed debris clouds backward through perturbed thermospheric regimes to identify parent satellite breakups autonomously.
+    \item \textbf{Hardware-in-the-Loop Validation:} Implement the trained PINN surrogates and KD-Tree/LSTM models on embedded radiation-hardened spacecraft processors to evaluate onboard autonomous collision avoidance and decentralized space traffic coordination.
 \end{itemize}
 
 \cleardoublepage
 
-% ==============================================================================
+% ------------------------------------------------------------------------------
 % BIBLIOGRAPHY
-% ==============================================================================
+% ------------------------------------------------------------------------------
 \addcontentsline{toc}{chapter}{Bibliography}
 \bibliographystyle{IEEEtran}
-\bibliography{../Shared/references}
+\bibliography{Shared/references}
 
 \end{document}
