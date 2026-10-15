@@ -1,0 +1,158 @@
+\documentclass[12pt,letterpaper,oneside]{book}
+
+% ==============================================================================
+% CORE PACKAGES & TYPOGRAPHY (PALATINO ENGINE - CONFLICT-FREE)
+% ==============================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+
+% 1. Math packages (load amsmath FIRST)
+\usepackage{amsmath}
+\usepackage{bm}
+% (Note: \usepackage{amssymb, amsfonts} removed — newpxmath provides all AMS symbols)
+
+% 2. Palatino font suite
+%\usepackage{newpxtext}
+%\usepackage{newpxmath}
+
+\usepackage[charter]{mathdesign}
+\usepackage{XCharter}
+
+\usepackage{microtype}
+\usepackage{geometry}
+\geometry{
+    letterpaper,
+    top=3.0cm,
+    bottom=2.5cm,
+    left=2.5cm,
+    right=2.5cm,
+    headheight=28pt
+}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{cite}
+\usepackage{url}
+\usepackage{pdfpages}
+\usepackage[colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=cyan]{hyperref}
+
+% Body line spacing for doctoral thesis
+\onehalfspacing
+
+% ==============================================================================
+% HEADERS & RUNNING PAGINATION (ONESIDE)
+% ==============================================================================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\small\thepage}
+\fancyhead[L]{\small\nouppercase{\leftmark}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\fancypagestyle{plain}{
+    \fancyhf{}
+    \fancyfoot[C]{\small\thepage}
+    \renewcommand{\headrulewidth}{0pt}
+}
+
+% Chapter and Section Formats
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\LARGE}
+  {\filleft\MakeUppercase{\chaptertitlename} \huge\thechapter}
+  {2ex}
+  {\titlerule\vspace{1.5ex}\filright}
+  [\vspace{1.5ex}\titlerule]
+\titlespacing*{\chapter}{0pt}{20pt}{30pt}
+
+\titleformat*{\section}{\large\bfseries}
+\titlespacing*{\section}{0pt}{18pt}{8pt}
+
+\titleformat*{\subsection}{\normalsize\bfseries}
+\titlespacing*{\subsection}{0pt}{12pt}{6pt}
+
+% ==============================================================================
+% DOCUMENT BEGINS
+% ==============================================================================
+\begin{document}
+
+\frontmatter
+
+% ------------------------------------------------------------------------------
+% TITLE PAGE
+% ------------------------------------------------------------------------------
+\begin{titlepage}
+\begin{center}
+    \vspace*{0.5cm}
+    {\LARGE \bfseries Development of an AI-Enhanced High-Fidelity Hybrid Semi-Symplectic Computational Framework for Massive Space Debris Fragmentation and Orbital Population Dynamics \par}
+    
+    \vspace{1.8cm}
+    {\Large \textbf{Juan Francisco Puerta-Ibarra} \par}
+    
+    \vspace{2.0cm}
+    {\normalsize Thesis presented as a partial requirement for the degree of: \\
+    \textbf{Doctor of Philosophy (Ph.D.) in Engineering} \par}
+    
+    \vspace{2.0cm}
+    {\normalsize
+    \textbf{Advisors:} \\
+    Nicolás Muñoz-Galeano, Ph.D. (Director) \\
+    Bonnie Prado Pino, Ph.D. (Co-Advisor) \par}
+    
+    \vfill
+    {\normalsize
+    Faculty of Engineering \\
+    Department of Mechanical and Aerospace Engineering \\
+    Research Group in Efficient Energy Management (GIMEL) \\
+    Universidad de Antioquia \\
+    Medellín, Colombia \\
+    2026 \par}
+\end{center}
+\end{titlepage}
+
+\clearpage
+
+% ------------------------------------------------------------------------------
+% PRELIMINARY PAGES
+% ------------------------------------------------------------------------------
+\tableofcontents
+\listoffigures
+\listoftables
+
+\clearpage
+
+% ==============================================================================
+% MAIN BODY (COMPENDIUM MODULES)
+% ==============================================================================
+\mainmatter
+
+% Chapter 1: Comprehensive Introduction & Synthesis (Swales CARS Model)
+\include{chapters/ch1_introduction}
+
+% Chapter 2: Publication 1 (AAS 25-787 / Symplectic Baseline)
+\include{chapters/ch2_paper1}
+
+% Chapter 3: Publication 2 (Dissipative Strang Operator Splitting)
+\include{chapters/ch3_paper2}
+
+% Chapter 4: Publication 3 (AAS 26-993 / Embedded AI Ecosystem)
+\include{chapters/ch4_paper3}
+
+% Chapter 5: Global Discussion, Conclusions & Strategic Outlook
+\include{chapters/ch5_conclusions}
+
+\clearpage
+
+% ==============================================================================
+% MASTER BIBLIOGRAPHY
+% ==============================================================================
+\backmatter
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliographystyle{IEEEtran}
+%\nocite{*}
+\bibliography{references}
+
+\end{document}

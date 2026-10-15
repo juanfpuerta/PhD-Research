@@ -28,20 +28,20 @@ jobs:
       - name: Main Thesis Document
         uses: xu-cheng/latex-action@v3
         with:
-          root_file: Thesis/Thesis_Main_Structure.tex
+          root_file: Thesis_Main_Structure.tex
           work_in_root_file_dir: true
           compiler: latexmk
           args: -pdf -file-line-error -interaction=nonstopmode -f
 
       - name: Stage Deployment Directory
         run: |
-          mkdir -p public/Shared/Images
+          mkdir -p public/Images
           # Copy compiled Thesis PDF
-          cp Thesis/Thesis_Main_Structure.pdf public/Thesis_Main_Structure.pdf
+          cp Thesis_Main_Structure.pdf public/Thesis_Main_Structure.pdf
           # Copy landing page
           cp index.html public/ 2>/dev/null || true
-          # Copy Shared/Images assets and root PNGs
-          cp -r Shared/Images/* public/Shared/Images/ 2>/dev/null || true
+          # Copy Images assets and root PNGs
+          cp -r Images/* public/Images/ 2>/dev/null || true
           cp *.png public/ 2>/dev/null || true
 
       - name: Setup Pages Configuration
